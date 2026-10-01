@@ -6,10 +6,7 @@ export default function App() {
           Portal de Solicitações Internas
         </p>
         <h1 className="text-3xl font-bold">Base do frontend configurada</h1>
-        <p className="mt-4 text-slate-600">
-          SPEC-001: React, TypeScript, Tailwind, ESLint e Prettier. As telas e
-          os dados serão implementados nas próximas specs.
-        </p>
+        <p className="mt-4 text-slate-600">Hello!!!</p>
       </div>
     </main>
   )
