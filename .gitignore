@@ -1,1 +1,10 @@
 portal-solicitacoes/
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+*.tsbuildinfo
+.DS_Store
+docs/
+context/
