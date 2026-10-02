@@ -1,19 +1,26 @@
 import { useEffect } from 'react'
+import { Navigate, useLocation } from 'react-router'
 import { LifeBuoy } from 'lucide-react'
-import { Link } from 'react-router'
-import { Button } from '@/components/ui/button'
 import {
   Card,
   CardHeader,
   CardTitle,
   CardDescription,
-  CardFooter,
+  CardContent,
 } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { useAuth } from './auth-context'
+import { LoginForm } from './LoginForm'
+import { loginDestination } from './login-schema'
 
 export function LoginPage() {
+  const auth = useAuth()
+  const location = useLocation()
   useEffect(() => {
     document.title = 'Login | Cubity Support'
   }, [])
+  if (auth.state.phase === 'authenticated')
+    return <Navigate to={loginDestination(location.state?.from)} replace />
   return (
     <main className="grid min-h-dvh place-items-center p-6">
       <Card asChild className="w-full max-w-md">
@@ -28,18 +35,38 @@ export function LoginPage() {
                 Acesse o portal
               </h1>
             </CardTitle>
-            <CardDescription asChild>
-              <p>
-                O acesso com usuário e senha estará disponível na etapa de
-                autenticação.
-              </p>
+            <CardDescription>
+              Demonstração com autenticação simulada em memória. Ainda não há
+              sessão real de backend.
             </CardDescription>
           </CardHeader>
-          <CardFooter>
-            <Button asChild className="w-full whitespace-normal text-center">
-              <Link to="/dashboard">Visualizar estrutura do portal</Link>
-            </Button>
-          </CardFooter>
+          <CardContent className="grid gap-5">
+            {auth.state.phase === 'loading' && (
+              <p role="status">Verificando sessão…</p>
+            )}
+            {auth.state.phase === 'error' && (
+              <>
+                <p role="alert" className="text-sm text-destructive">
+                  {auth.state.message}
+                </p>
+                <Button onClick={auth.refresh}>Tentar novamente</Button>
+              </>
+            )}
+            {auth.state.phase === 'unauthenticated' && (
+              <>
+                {auth.state.message && (
+                  <p role="alert" className="text-sm text-destructive">
+                    {auth.state.message}
+                  </p>
+                )}
+                <LoginForm onLogin={auth.login} />
+                <p className="text-sm text-muted-foreground">
+                  Usuários de demonstração: ana.demo ou bruno.demo. Senha:
+                  demo123.
+                </p>
+              </>
+            )}
+          </CardContent>
         </section>
       </Card>
     </main>
