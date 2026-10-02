@@ -6,19 +6,28 @@ import { RequestDetailsPage } from './features/requests/RequestDetailsPage'
 import { RequestsPage } from './features/requests/RequestsPage'
 import { RequestFormPage } from './features/requests/RequestFormPage'
 import { NotFoundPage } from './components/NotFoundPage'
+import { RequireSession } from './features/auth/RequireSession'
 
 export const router = createBrowserRouter([
   { path: '/login', Component: LoginPage },
   {
-    Component: AppLayout,
+    Component: RequireSession,
     children: [
-      { index: true, element: <Navigate to="/dashboard" replace /> },
-      { path: '/dashboard', Component: DashboardPage },
-      { path: '/requests', Component: RequestsPage },
-      { path: '/requests/new', element: <RequestFormPage mode="new" /> },
-      { path: '/requests/:id', Component: RequestDetailsPage },
-      { path: '/requests/:id/edit', element: <RequestFormPage mode="edit" /> },
-      { path: '*', Component: NotFoundPage },
+      {
+        Component: AppLayout,
+        children: [
+          { index: true, element: <Navigate to="/dashboard" replace /> },
+          { path: '/dashboard', Component: DashboardPage },
+          { path: '/requests', Component: RequestsPage },
+          { path: '/requests/new', element: <RequestFormPage mode="new" /> },
+          { path: '/requests/:id', Component: RequestDetailsPage },
+          {
+            path: '/requests/:id/edit',
+            element: <RequestFormPage mode="edit" />,
+          },
+          { path: '*', Component: NotFoundPage },
+        ],
+      },
     ],
   },
 ])

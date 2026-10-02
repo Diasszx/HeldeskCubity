@@ -56,6 +56,10 @@ export interface CategoriesService {
 }
 
 export interface PortalServices {
+  auth: {
+    login(input: { username: string; password: string }): Promise<User>
+    logout(): Promise<void>
+  }
   users: UsersService
   categories: CategoriesService
   requests: RequestsService

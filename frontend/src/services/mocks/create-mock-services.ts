@@ -76,6 +76,25 @@ export function createMockServices(options: MockOptions = {}): MockPortal {
   }
 
   const services: PortalServices = {
+    auth: {
+      login: (input) =>
+        execute(() => {
+          const user = users.find(
+            (entry) => entry.username === input.username.trim(),
+          )
+          if (!user || input.password !== 'demo123')
+            throw new ServiceError(
+              'UNAUTHENTICATED',
+              'Usuário ou senha inválidos.',
+            )
+          currentUserId = user.id
+          return user
+        }),
+      logout: () =>
+        execute(() => {
+          currentUserId = null
+        }),
+    },
     users: {
       list: () =>
         execute(() => {
