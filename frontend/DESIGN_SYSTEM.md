@@ -12,6 +12,7 @@ Button e Card foram incorporados com `npx shadcn@latest add button card --yes`, 
 - `src/components/layout`: Brand, Sidebar, Navigation, MenuToggle, PageHeader, SectionHeader e AppLayout. Navigation coordena slots e estados open/active com `tv`.
 - SPEC-004: Input, Label, NativeSelect, Table e Badge incorporados com `npx shadcn@latest add input label native-select table badge --yes`. Imports usam o `cn` local; Badge adapta cva para tv; NativeSelect coordena tamanhos com slots de tv. Table oferece região focável para rolagem horizontal por teclado. Input e NativeSelect têm tamanho padrão de 44 px.
 - Status das solicitações usam RequestStatusBadge com `tv` e tokens status-open, status-progress e status-completed, incluindo seus foregrounds. O texto identifica cada status independentemente da cor.
+- SPEC-005: Textarea incorporado com `npx shadcn@latest add textarea --yes` do registro oficial. Import de cn corrigido para o utilitário local; dependência cn gerada pelo CLI removida. Preserva tokens, foco e erro acessível. Não possui variantes; os componentes com variantes continuam usando tv. Formulário reutiliza Button, Card, Input, Textarea, Label e NativeSelect.
 
 Referências: https://ui.shadcn.com/docs/components/radix/button e https://ui.shadcn.com/docs/components/radix/card. Variantes: https://www.tailwind-variants.org/docs/introduction.
 

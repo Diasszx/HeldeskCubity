@@ -4,6 +4,7 @@ import type {
   RequestInput,
 } from '../../contracts/portal.ts'
 import { ServiceError } from '../service-error.ts'
+import { requestLimits } from '../../contracts/request-limits.ts'
 
 export function validateInput(
   input: RequestInput,
@@ -20,6 +21,14 @@ export function validateInput(
   if (!categories.some((category) => category.id === input.categoryId)) {
     throw new ServiceError('VALIDATION', 'Selecione uma categoria válida.')
   }
+  if (
+    input.title.trim().length > requestLimits.title ||
+    input.description.trim().length > requestLimits.description
+  )
+    throw new ServiceError(
+      'VALIDATION',
+      'Título deve ter até 60 caracteres e descrição até 1.000 caracteres.',
+    )
   return {
     title: input.title.trim(),
     description: input.description.trim(),
