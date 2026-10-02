@@ -1,0 +1,48 @@
+# Base da API
+
+Base ESM com type: module e TypeScript NodeNext. Node.js 24, NestJS 12, Express, TypeScript 5.9, Zod 4, Prisma 7 e PostgreSQL. O package-lock.json registra as versões instaladas. Sessões e regras de negócio serão implementadas nas próximas etapas.
+
+## Executar
+
+Dentro de backend:
+
+```powershell
+npm ci
+Copy-Item .env.example .env
+# Ajuste DATABASE_URL e gere um SESSION_SECRET próprio de pelo menos 32 caracteres.
+npm run dev
+```
+
+Copie o exemplo somente se .env ainda não existir. Não publique esse arquivo. PORT é 3000 e HOST é 127.0.0.1 por padrão. NODE_ENV aceita development, test ou production. DATABASE_URL deve usar postgres:// ou postgresql://; SESSION_SECRET é obrigatório, antecipando a configuração de sessões. O valor do exemplo é público e deve ser substituído.
+
+- GET /api/health retorna {"status":"ok"}: verifica o processo, sem verificar conectividade do banco.
+- /api/docs apresenta Swagger; /api/docs-json apresenta OpenAPI.
+- O health é público. O esquema de sessão por cookie está documentado para as próximas rotas protegidas, mas não existe autenticação implementada nesta etapa. Nenhuma rota de negócio foi simulada.
+
+PrismaService usa o adapter PostgreSQL, abre conexões sob demanda e desconecta no encerramento. O schema contém apenas generator e datasource: sem modelos, tabelas ou migrations. npm ci gera o cliente local ignorado pelo Git, sem consultar o banco. A próxima etapa adicionará schema e persistência real.
+
+## Verificação e produção
+
+```powershell
+npm run check
+npm run build
+npm start
+```
+
+check executa geração, tipos, ESLint, Prettier, Jest/Supertest e build. start usa dist/main.js. Configuração inválida informa os nomes das variáveis, sem imprimir seus valores. Falhas internas HTTP não devolvem detalhes ou segredos.
+
+Erros HTTP usam {"code":"NOT_FOUND","message":"Recurso não encontrado."}. Códigos: 400 VALIDATION, 401 UNAUTHENTICATED, 403 FORBIDDEN, 404 NOT_FOUND, 409 CONFLICT e demais falhas INTERNAL_ERROR. Detalhes de validação por campo serão definidos junto aos endpoints. Não registre credenciais ou conexões completas nos logs.
+
+## Limites
+
+Docker Compose do banco está sendo preparado separadamente na raiz. Esta base executa no host; imagens da API e do frontend e startup integrado ficam para a etapa de infraestrutura completa. Não há sessão, seed, migrations, CSRF ou endpoints de negócio nesta entrega.
+
+Versões instaladas: Node 24.14.1, NestJS 12.1.2, @nestjs/config 12.0.1, Swagger 12.0.2, Prisma e adapter-pg 7.10.0, pg 8.23.1 e Zod 4.6.5. O CLI Prisma exige overrides transitivos para deepmerge-ts 8.0.2 e mysql2 3.24.5; geração e instalação são verificadas com essa configuração. Remover os overrides quando o upstream incorporar as correções. npm audit reportou zero vulnerabilidades após esses ajustes. A compatibilidade de migrations será verificada na etapa de persistência.
+
+Referências: [NestJS Swagger](https://docs.nestjs.com/openapi/security), [geração do Prisma Client](https://www.prisma.io/docs/orm/v7/prisma-client/setup-and-configuration/generating-prisma-client).
+
+## Evidências da entrega
+
+npm ci passou com geração automática do Prisma ESM. npm run check passou: tipos, lint, formatação, 15 testes em três suites e build. npm run dev e npm start iniciaram a aplicação; health respondeu por HTTP e Swagger foi verificado no navegador. O startup com configuração inválida retornou código 1, informando nomes de variáveis sem expor os valores de teste. Não foi verificada conexão ou migração do PostgreSQL nesta etapa.
+
+Desenvolvimento compila TypeScript com metadata de decorators e executa o JavaScript ESM no Node em watch. Jest utiliza --experimental-vm-modules somente nos testes. Código da aplicação e Prisma gerado permanecem ESM também no build de produção.
