@@ -2,7 +2,8 @@ import { createBrowserRouter, Navigate } from 'react-router'
 import { AppLayout } from './components/layout/AppLayout'
 import { LoginPage } from './features/auth/LoginPage'
 import { DashboardPage } from './features/dashboard/DashboardPage'
-import { RequestPage, RequestsPage } from './features/requests/RequestPages'
+import { RequestPage } from './features/requests/RequestPages'
+import { RequestsPage } from './features/requests/RequestsPage'
 import { NotFoundPage } from './components/NotFoundPage'
 
 export const router = createBrowserRouter([
