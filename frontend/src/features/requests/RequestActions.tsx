@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import { Link } from 'react-router'
 import { Button } from '@/components/ui/button'
 import {
@@ -26,12 +27,24 @@ export function RequestActions({
   onRemove: () => Promise<boolean>
 }) {
   const actions = availableRequestActions(data.request, data.currentUser)
+  const advanceButton = useRef<HTMLButtonElement>(null)
+  const actionsTitle = useRef<HTMLHeadingElement>(null)
+  const focusRequested = useRef(false)
+  useEffect(() => {
+    if (!pending && focusRequested.current) {
+      focusRequested.current = false
+      if (!blocked && advanceButton.current) advanceButton.current.focus()
+      else actionsTitle.current?.focus()
+    }
+  }, [pending, blocked, data.request.status])
   return (
     <Card asChild density="compact">
       <section aria-labelledby="actions-title" aria-busy={pending}>
         <CardHeader>
           <CardTitle asChild>
-            <h2 id="actions-title">Ações da solicitação</h2>
+            <h2 id="actions-title" ref={actionsTitle} tabIndex={-1}>
+              Ações da solicitação
+            </h2>
           </CardTitle>
           <CardDescription>
             O atendimento avança de Aberto para Em Atendimento e depois
@@ -42,8 +55,10 @@ export function RequestActions({
         <CardContent className="flex flex-wrap gap-3">
           {actions.nextStatus && (
             <Button
+              ref={advanceButton}
               disabled={pending || blocked}
               onClick={() => {
+                focusRequested.current = true
                 void onAdvance()
               }}
             >
