@@ -19,6 +19,8 @@ Referências: https://ui.shadcn.com/docs/components/radix/button e https://ui.sh
 
 ## Tema e uso
 
+SPEC-007: IndicatorCard reutiliza Card shadcn/ui. Receita tv coordena slots label/value com tons total, open, progress e completed, usando foreground/muted-foreground e os tokens semânticos de status. Não foram adicionados componentes de registro ou dependências nesta etapa.
+
 `src/index.css` centraliza cores em tokens semânticos no bloco `:root` e mapeia esses tokens para Tailwind com `@theme inline`. Componentes consomem bg-background, bg-card, text-foreground, text-muted-foreground, bg-primary, bg-accent, border-border e ring-ring. Não criar uma paleta própria nas páginas.
 
 A varredura de classes usa `source(none)` e `@source './'`, limitada a frontend/src. Evita incorporar classes do checkout separado, documentos ou harnesses temporários e mantém a geração de CSS independente da configuração local de ignore. Referência: https://tailwindcss.com/docs/detecting-classes-in-source-files.
