@@ -20,6 +20,12 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-status-open: var(--status-open);
+  --color-status-open-foreground: var(--status-open-foreground);
+  --color-status-progress: var(--status-progress);
+  --color-status-progress-foreground: var(--status-progress-foreground);
+  --color-status-completed: var(--status-completed);
+  --color-status-completed-foreground: var(--status-completed-foreground);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -47,6 +53,12 @@
   --border: #d5dbe6;
   --input: #bbc4d3;
   --ring: #5540bd;
+  --status-open: #fff7ed;
+  --status-open-foreground: #9a3412;
+  --status-progress: #eff6ff;
+  --status-progress-foreground: #1e40af;
+  --status-completed: #ecfdf5;
+  --status-completed-foreground: #065f46;
 }
 
 @layer base {
