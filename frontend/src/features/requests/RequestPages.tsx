@@ -1,17 +1,21 @@
 import { Link, useParams } from 'react-router'
 import { Plus } from 'lucide-react'
-import { Placeholder } from '../../components/Placeholder'
+import { Placeholder } from '@/components/Placeholder'
+import { Button } from '@/components/ui/button'
+import { SectionHeader } from '@/components/layout/SectionHeader'
 
 export function RequestsPage() {
   return (
     <>
-      <div className="section-heading">
+      <SectionHeader>
         <p>Acompanhe as demandas da sua equipe.</p>
-        <Link to="/requests/new" className="button">
-          <Plus size={17} aria-hidden="true" />
-          Nova solicitação
-        </Link>
-      </div>
+        <Button asChild>
+          <Link to="/requests/new">
+            <Plus aria-hidden="true" />
+            Nova solicitação
+          </Link>
+        </Button>
+      </SectionHeader>
       <Placeholder title="Listagem em preparação">
         As solicitações e os filtros estarão disponíveis nas próximas etapas.
       </Placeholder>
@@ -23,11 +27,11 @@ export function RequestPage({ mode }: { mode: 'new' | 'details' | 'edit' }) {
   const { id } = useParams()
   return (
     <>
-      <div className="section-heading">
-        <Link to="/requests" className="text-link">
-          ← Voltar para solicitações
-        </Link>
-      </div>
+      <SectionHeader>
+        <Button variant="link" asChild className="px-0">
+          <Link to="/requests">← Voltar para solicitações</Link>
+        </Button>
+      </SectionHeader>
       <Placeholder
         title={
           mode === 'new'

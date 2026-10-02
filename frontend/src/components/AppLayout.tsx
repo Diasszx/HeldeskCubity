@@ -12,7 +12,7 @@ export function AppLayout() {
     pathname === '/dashboard'
       ? 'Dashboard'
       : pathname === '/requests/new'
-        ? 'Nova solicitação'
+        ? 'Nova solicitação'  
         : /^\/requests\/[^/]+\/edit$/.test(pathname)
           ? 'Editar solicitação'
           : /^\/requests\/[^/]+$/.test(pathname)
