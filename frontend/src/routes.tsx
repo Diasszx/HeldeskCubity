@@ -2,7 +2,7 @@ import { createBrowserRouter, Navigate } from 'react-router'
 import { AppLayout } from './components/layout/AppLayout'
 import { LoginPage } from './features/auth/LoginPage'
 import { DashboardPage } from './features/dashboard/DashboardPage'
-import { RequestPage } from './features/requests/RequestPages'
+import { RequestDetailsPage } from './features/requests/RequestDetailsPage'
 import { RequestsPage } from './features/requests/RequestsPage'
 import { RequestFormPage } from './features/requests/RequestFormPage'
 import { NotFoundPage } from './components/NotFoundPage'
@@ -16,7 +16,7 @@ export const router = createBrowserRouter([
       { path: '/dashboard', Component: DashboardPage },
       { path: '/requests', Component: RequestsPage },
       { path: '/requests/new', element: <RequestFormPage mode="new" /> },
-      { path: '/requests/:id', Component: RequestPage },
+      { path: '/requests/:id', Component: RequestDetailsPage },
       { path: '/requests/:id/edit', element: <RequestFormPage mode="edit" /> },
       { path: '*', Component: NotFoundPage },
     ],
