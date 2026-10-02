@@ -27,4 +27,6 @@ Os testes usam o executor nativo do Node e cobrem o utilitário `cn`, regras do 
 
 ## Services de demonstração
 
-A SPEC-003 define contratos e services assíncronos com dados em memória. Não há API, persistência real ou autenticação implementada. Recarregar a página restaura as fixtures. As telas ainda são placeholders; a listagem e os filtros visuais serão tratados na SPEC-004. Consulte [a entrega da SPEC-003](frontend/SPEC-003.md) para uso, validação e limitações.
+A SPEC-003 define contratos e services assíncronos com dados em memória. Não há API, persistência real ou autenticação implementada. Recarregar a página restaura as fixtures. Consulte [a entrega da SPEC-003](frontend/SPEC-003.md) para uso, validação e limitações.
+
+A SPEC-004 implementa a listagem em `/requests`, com filtros combinados por título, categoria, status e período inclusivo em UTC. Inclui limpeza, carregamento, resultado vazio e erro com nova tentativa. Formulários e detalhes continuam provisórios. Consulte [a entrega da SPEC-004](frontend/SPEC-004.md).

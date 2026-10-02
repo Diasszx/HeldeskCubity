@@ -10,12 +10,16 @@ Button e Card foram incorporados com `npx shadcn@latest add button card --yes`, 
 - `src/components/ui/button-variants.ts`: variantes default, destructive, outline, secondary, ghost e link; tamanhos default, sm, lg e icon. Receita `tv` com tipos inferidos.
 - `src/components/ui/card.tsx`: Card, Header, Title, Description, Content e Footer. Densidade default ou compact com `tv`; composição com `asChild` permite section, h1, h2 e p sem perder semântica.
 - `src/components/layout`: Brand, Sidebar, Navigation, MenuToggle, PageHeader, SectionHeader e AppLayout. Navigation coordena slots e estados open/active com `tv`.
+- SPEC-004: Input, Label, NativeSelect, Table e Badge incorporados com `npx shadcn@latest add input label native-select table badge --yes`. Imports usam o `cn` local; Badge adapta cva para tv; NativeSelect coordena tamanhos com slots de tv. Table oferece região focável para rolagem horizontal por teclado. Input e NativeSelect têm tamanho padrão de 44 px.
+- Status das solicitações usam RequestStatusBadge com `tv` e tokens status-open, status-progress e status-completed, incluindo seus foregrounds. O texto identifica cada status independentemente da cor.
 
 Referências: https://ui.shadcn.com/docs/components/radix/button e https://ui.shadcn.com/docs/components/radix/card. Variantes: https://www.tailwind-variants.org/docs/introduction.
 
 ## Tema e uso
 
 `src/index.css` centraliza cores em tokens semânticos no bloco `:root` e mapeia esses tokens para Tailwind com `@theme inline`. Componentes consomem bg-background, bg-card, text-foreground, text-muted-foreground, bg-primary, bg-accent, border-border e ring-ring. Não criar uma paleta própria nas páginas.
+
+A varredura de classes usa `source(none)` e `@source './'`, limitada a frontend/src. Evita incorporar classes do checkout separado, documentos ou harnesses temporários e mantém a geração de CSS independente da configuração local de ignore. Referência: https://tailwindcss.com/docs/detecting-classes-in-source-files.
 
 Usar Button para ações e links de ação (`asChild` + Link). Usar Card para painéis. Criar novos componentes a partir do registro oficial shadcn/ui e adaptar variantes de cva para tv antes de concluir. Não substituir os componentes por seletores CSS próprios. Compor className com os utilitários/receitas existentes, mantendo o foco visível.
 
