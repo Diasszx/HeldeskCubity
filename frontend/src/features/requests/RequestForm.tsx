@@ -38,7 +38,7 @@ export function RequestForm({
     resolver: zodResolver(requestSchema(categories)),
     defaultValues: initialValues,
   })
-  const submit = handleSubmit(async (values) => {
+  async function save(values: RequestInput) {
     if (locked.current) return
     locked.current = true
     try {
@@ -53,7 +53,7 @@ export function RequestForm({
     } finally {
       locked.current = false
     }
-  })
+  }
   return (
     <Card asChild>
       <section aria-labelledby="request-form-title">
@@ -73,7 +73,7 @@ export function RequestForm({
             noValidate
             aria-busy={isSubmitting}
             onSubmit={(event) => {
-              void submit(event)
+              void handleSubmit(save)(event)
             }}
             className="grid gap-5"
           >

@@ -2,8 +2,9 @@ import { Link, useParams } from 'react-router'
 import { Placeholder } from '@/components/Placeholder'
 import { Button } from '@/components/ui/button'
 import { SectionHeader } from '@/components/layout/SectionHeader'
+import { RequestEditAction } from './RequestEditAction'
 
-export function RequestPage({ mode }: { mode: 'new' | 'details' | 'edit' }) {
+export function RequestPage() {
   const { id } = useParams()
   return (
     <>
@@ -11,19 +12,10 @@ export function RequestPage({ mode }: { mode: 'new' | 'details' | 'edit' }) {
         <Button variant="link" asChild className="px-0">
           <Link to="/requests">← Voltar para solicitações</Link>
         </Button>
+        {id && <RequestEditAction key={id} id={id} />}
       </SectionHeader>
-      <Placeholder
-        title={
-          mode === 'new'
-            ? 'Registre uma demanda'
-            : mode === 'edit'
-              ? 'Edição da solicitação'
-              : 'Informações da solicitação'
-        }
-      >
-        {mode === 'new'
-          ? 'O formulário de cadastro será disponibilizado na etapa de formulários.'
-          : `Endereço da solicitação: ${id}. Os dados e as ações serão disponibilizados nas próximas etapas.`}
+      <Placeholder title="Informações da solicitação">
+        {`Endereço da solicitação: ${id}. A apresentação completa dos detalhes e as ações de atendimento serão disponibilizadas na próxima etapa.`}
       </Placeholder>
     </>
   )

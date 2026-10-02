@@ -16,7 +16,7 @@ export const router = createBrowserRouter([
       { path: '/dashboard', Component: DashboardPage },
       { path: '/requests', Component: RequestsPage },
       { path: '/requests/new', element: <RequestFormPage mode="new" /> },
-      { path: '/requests/:id', element: <RequestPage mode="details" /> },
+      { path: '/requests/:id', Component: RequestPage },
       { path: '/requests/:id/edit', element: <RequestFormPage mode="edit" /> },
       { path: '*', Component: NotFoundPage },
     ],

@@ -14,6 +14,25 @@ export function RequestFormPage({
   services?: PortalServices
 }) {
   const { id } = useParams()
+  return (
+    <RequestFormContent
+      key={`${mode}-${id ?? 'new'}`}
+      mode={mode}
+      id={id}
+      services={services}
+    />
+  )
+}
+
+function RequestFormContent({
+  mode,
+  id,
+  services,
+}: {
+  mode: 'new' | 'edit'
+  id?: string
+  services?: PortalServices
+}) {
   const navigate = useNavigate()
   const form = useRequestForm(mode === 'edit' ? id : undefined, services)
   return (
