@@ -1,4 +1,4 @@
-import { Link } from 'react-router'
+import { Link, useLocation } from 'react-router'
 import { Plus } from 'lucide-react'
 import type { PortalServices } from '@/contracts/portal'
 import { Button } from '@/components/ui/button'
@@ -9,8 +9,15 @@ import { RequestListResults } from './RequestListResults'
 
 export function RequestsPage({ services }: { services?: PortalServices }) {
   const list = useRequestsList(services)
+  const location = useLocation()
+  const success: unknown = location.state?.requestSuccess
   return (
     <>
+      {typeof success === 'string' && (
+        <p role="status" className="mb-4 text-sm text-foreground">
+          {success}
+        </p>
+      )}
       <SectionHeader>
         <p>Acompanhe as demandas da sua equipe.</p>
         <Button asChild>
