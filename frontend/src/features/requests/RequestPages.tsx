@@ -1,27 +1,7 @@
 import { Link, useParams } from 'react-router'
-import { Plus } from 'lucide-react'
 import { Placeholder } from '@/components/Placeholder'
 import { Button } from '@/components/ui/button'
 import { SectionHeader } from '@/components/layout/SectionHeader'
-
-export function RequestsPage() {
-  return (
-    <>
-      <SectionHeader>
-        <p>Acompanhe as demandas da sua equipe.</p>
-        <Button asChild>
-          <Link to="/requests/new">
-            <Plus aria-hidden="true" />
-            Nova solicitação
-          </Link>
-        </Button>
-      </SectionHeader>
-      <Placeholder title="Listagem em preparação">
-        As solicitações e os filtros estarão disponíveis nas próximas etapas.
-      </Placeholder>
-    </>
-  )
-}
 
 export function RequestPage({ mode }: { mode: 'new' | 'details' | 'edit' }) {
   const { id } = useParams()
