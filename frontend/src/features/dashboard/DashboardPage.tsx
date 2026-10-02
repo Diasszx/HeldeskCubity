@@ -1,15 +1,17 @@
 import { Link } from 'react-router'
-import { Placeholder } from '../../components/Placeholder'
+import { Placeholder } from '@/components/Placeholder'
+import { Button } from '@/components/ui/button'
+import { SectionHeader } from '@/components/layout/SectionHeader'
 
 export function DashboardPage() {
   return (
     <>
-      <div className="section-heading">
+      <SectionHeader>
         <p>Visão geral das solicitações internas.</p>
-        <Link to="/requests" className="button button-secondary">
-          Ver solicitações
-        </Link>
-      </div>
+        <Button variant="outline" asChild>
+          <Link to="/requests">Ver solicitações</Link>
+        </Button>
+      </SectionHeader>
       <Placeholder title="Indicadores em breve">
         Os totais e indicadores serão apresentados quando os dados das
         solicitações estiverem disponíveis.
