@@ -1,10 +1,58 @@
 generator client {
-  provider     = "prisma-client"
-  output       = "../src/generated/prisma"
-  moduleFormat = "esm"
+  provider            = "prisma-client"
+  output              = "../src/generated/prisma"
+  moduleFormat        = "esm"
   importFileExtension = "js"
 }
 
 datasource db {
   provider = "postgresql"
+}
+
+enum RequestStatus {
+  OPEN
+  IN_PROGRESS
+  COMPLETED
+}
+
+model User {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name         String    @db.VarChar(120)
+  username     String    @unique @db.VarChar(64)
+  passwordHash String    @db.VarChar(60)
+  requests     Request[]
+}
+
+model Category {
+  id       String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name     String    @unique @db.VarChar(80)
+  requests Request[]
+}
+
+model Request {
+  id          String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code        String        @unique @default(dbgenerated("next_request_code()")) @db.VarChar(32)
+  title       String        @db.VarChar(60)
+  description String        @db.VarChar(1000)
+  categoryId  String        @db.Uuid
+  requesterId String        @db.Uuid
+  createdAt   DateTime      @default(now()) @db.Timestamptz(3)
+  status      RequestStatus @default(OPEN)
+  category    Category      @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  requester   User          @relation(fields: [requesterId], references: [id], onDelete: Restrict)
+
+  @@index([createdAt, id])
+  @@index([categoryId, createdAt])
+  @@index([status, createdAt])
+  @@index([requesterId])
+}
+
+// Owned by connect-pg-simple; no Prisma relationship to the session payload.
+model Session {
+  sid    String   @id @db.VarChar
+  sess   Json     @db.Json
+  expire DateTime @db.Timestamp(6)
+
+  @@index([expire], map: "IDX_session_expire")
+  @@map("session")
 }
