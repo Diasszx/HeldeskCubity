@@ -1,8 +1,11 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  HttpCode,
   Param,
+  Patch,
   Post,
   Query,
   Req,
@@ -33,6 +36,61 @@ import type { RequestFilters } from './request-filters.js';
 @Controller('requests')
 export class RequestsController {
   constructor(private readonly requests: RequestsService) {}
+
+  private requester(request: AuthRequest) {
+    if (!request.authUser) throw new UnauthorizedException();
+    return request.authUser.id;
+  }
+
+  @Patch(':id')
+  @ApiParam({ name: 'id', type: String, format: 'uuid' })
+  @ApiHeader({ name: 'X-CSRF-Token', required: true })
+  @ApiBody({
+    schema: createRequestBody,
+    description: 'Substitui os três campos editáveis; somente o dono de OPEN.',
+  })
+  @ApiOkResponse({ type: RequestResponse })
+  @ApiResponse({
+    status: 400,
+    description: 'Campos, categoria ou ID inválidos.',
+  })
+  @ApiResponse({ status: 401, description: 'Sessão válida obrigatória.' })
+  @ApiResponse({
+    status: 403,
+    description: 'Dono incorreto, CSRF ou origem inválida.',
+  })
+  @ApiResponse({ status: 404, description: 'Solicitação inexistente.' })
+  @ApiResponse({ status: 409, description: 'Solicitação já não está OPEN.' })
+  update(
+    @Param('id', new ZodPipe(requestIdSchema)) id: string,
+    @Req() request: AuthRequest,
+    @Body(new ZodPipe(createRequestSchema)) input: CreateRequestInput,
+  ) {
+    return this.requests.update(id, input, this.requester(request));
+  }
+
+  @Delete(':id')
+  @HttpCode(204)
+  @ApiParam({ name: 'id', type: String, format: 'uuid' })
+  @ApiHeader({ name: 'X-CSRF-Token', required: true })
+  @ApiResponse({
+    status: 204,
+    description: 'Excluída pelo dono enquanto OPEN.',
+  })
+  @ApiResponse({ status: 400, description: 'ID inválido.' })
+  @ApiResponse({ status: 401, description: 'Sessão válida obrigatória.' })
+  @ApiResponse({
+    status: 403,
+    description: 'Dono incorreto, CSRF ou origem inválida.',
+  })
+  @ApiResponse({ status: 404, description: 'Solicitação inexistente.' })
+  @ApiResponse({ status: 409, description: 'Solicitação já não está OPEN.' })
+  remove(
+    @Param('id', new ZodPipe(requestIdSchema)) id: string,
+    @Req() request: AuthRequest,
+  ) {
+    return this.requests.remove(id, this.requester(request));
+  }
 
   @Get()
   @ApiQuery({
@@ -101,7 +159,6 @@ export class RequestsController {
     @Req() request: AuthRequest,
     @Body(new ZodPipe(createRequestSchema)) input: CreateRequestInput,
   ) {
-    if (!request.authUser) throw new UnauthorizedException();
-    return this.requests.create(input, request.authUser.id);
+    return this.requests.create(input, this.requester(request));
   }
 }
