@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { randomUUID } from 'node:crypto';
-import { spawnSync } from 'node:child_process';
+import { prepareTestDatabase } from '../support/test-database.js';
 import { Module, Controller, Get, type INestApplication } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
@@ -70,31 +70,11 @@ async function createApp(overrides: Record<string, unknown> = {}) {
 }
 
 beforeAll(async () => {
-  const value = process.env.TEST_DATABASE_URL;
-  if (!value || process.env.NODE_ENV === 'production')
-    throw new Error('Informe banco de testes dedicado.');
-  const url = new URL(value);
-  if (
-    !['postgres:', 'postgresql:'].includes(url.protocol) ||
-    url.pathname !== '/cubity_support_test' ||
-    url.username !== 'cubity_test' ||
-    !['127.0.0.1', 'localhost', 'db-test'].includes(url.hostname)
-  )
-    throw new Error('Banco de testes rejeitado.');
-  databaseUrl = value;
+  const value = prepareTestDatabase();
   process.env.DATABASE_URL = value;
   process.env.SESSION_SECRET =
-    'test-secret-with-at-least-thirty-two-characters';
-  const migration = spawnSync(
-    process.execPath,
-    ['node_modules/prisma/build/index.js', 'migrate', 'deploy'],
-    {
-      env: { ...process.env, DATABASE_URL: value },
-      encoding: 'utf8',
-      timeout: 45000,
-    },
-  );
-  if (migration.status !== 0) throw new Error('Migration de teste falhou.');
+    'integration-test-secret-at-least-thirty-two-characters';
+  databaseUrl = value;
   client = new PrismaClient({
     adapter: new PrismaPg({ connectionString: value }),
   });

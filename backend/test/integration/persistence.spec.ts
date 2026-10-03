@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { randomUUID } from 'node:crypto';
-import { spawnSync } from 'node:child_process';
+import { prepareTestDatabase } from '../support/test-database.js';
 import { compare, hash } from 'bcrypt';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '../../src/generated/prisma/client.js';
@@ -12,31 +12,7 @@ let userId: string;
 let categoryId: string;
 
 beforeAll(async () => {
-  const rawUrl = process.env.TEST_DATABASE_URL;
-  if (!rawUrl || process.env.NODE_ENV === 'production')
-    throw new Error('Informe TEST_DATABASE_URL de testes.');
-  const url = new URL(rawUrl);
-  if (
-    !['postgres:', 'postgresql:'].includes(url.protocol) ||
-    url.pathname !== '/cubity_support_test' ||
-    url.username !== 'cubity_test' ||
-    !['127.0.0.1', 'localhost', 'db-test'].includes(url.hostname)
-  ) {
-    throw new Error(
-      'Banco de testes rejeitado: use cubity_support_test/cubity_test em host local ou db-test.',
-    );
-  }
-  const deploy = spawnSync(
-    process.execPath,
-    ['node_modules/prisma/build/index.js', 'migrate', 'deploy'],
-    {
-      env: { ...process.env, NODE_ENV: 'test', DATABASE_URL: rawUrl },
-      encoding: 'utf8',
-      timeout: 45000,
-    },
-  );
-  if (deploy.status !== 0)
-    throw new Error('Migrations do banco de testes falharam.');
+  const rawUrl = prepareTestDatabase();
   client = new PrismaClient({
     adapter: new PrismaPg({ connectionString: rawUrl }),
   });

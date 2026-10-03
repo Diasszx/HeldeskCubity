@@ -22,7 +22,7 @@ Leitura inicial oferece a classificação de permissão e estado. A escrita conf
 
 Se o estado muda entre leitura e escrita, Prisma P2025 é classificado após consultar o estado atual: ausência retorna 404; dono incompatível retorna 403 para edição/exclusão; conflito de estado retorna 409. Não há retry que avance automaticamente o atendimento. Duas chamadas para OPEN → IN_PROGRESS não completam a solicitação nem repetem o avanço: apenas uma escrita vence. Solicitações continuam visíveis a todos os autenticados, conforme [QUERIES.md](QUERIES.md).
 
-Não foram adicionados pacotes ou migrations. O backend disponibiliza os contratos necessários à futura integração do frontend, que permanece com mocks. CI completo e Compose da aplicação seguem nas etapas próprias.
+Não foram adicionados pacotes ou migrations. O backend disponibiliza os contratos necessários à futura integração do frontend, que permanece com mocks. O CI está descrito em [TESTING.md](TESTING.md); Compose da aplicação segue na etapa própria.
 
 ## Verificação
 

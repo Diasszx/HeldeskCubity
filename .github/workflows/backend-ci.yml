@@ -1,0 +1,63 @@
+name: Backend CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: backend-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Backend quality and PostgreSQL integration
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: backend
+    env:
+      NODE_ENV: test
+      DATABASE_URL: postgresql://cubity_test:cubity-test-demo@127.0.0.1:5432/cubity_support_test?schema=public
+      TEST_DATABASE_URL: postgresql://cubity_test:cubity-test-demo@127.0.0.1:5432/cubity_support_test?schema=public
+      SESSION_SECRET: ci-only-session-secret-at-least-thirty-two-characters
+      APP_ORIGIN: http://portal.test
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: cubity_support_test
+          POSTGRES_USER: cubity_test
+          POSTGRES_PASSWORD: cubity-test-demo
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U cubity_test -d cubity_support_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - name: Install dependencies
+        run: npm ci
+      - name: Types lint formatting unit HTTP and build
+        run: npm run check
+      - name: Migrations and PostgreSQL integration
+        run: npm run test:db
+      - name: Repeat integration to verify fixture isolation
+        run: npm run test:db
