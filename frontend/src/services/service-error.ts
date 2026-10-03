@@ -5,6 +5,7 @@ export type ServiceErrorCode =
   | 'VALIDATION'
   | 'CONFLICT'
   | 'NETWORK'
+  | 'INTERNAL_ERROR'
 
 export class ServiceError extends Error {
   readonly code: ServiceErrorCode
