@@ -10,6 +10,7 @@ import { PrismaService } from '../prisma/prisma.service.js';
 import type { CreateRequestInput } from './request-input.js';
 import { escapeSearch, utcPeriod } from './request-filters.js';
 import type { RequestFilters } from './request-filters.js';
+import type { ChangeStatusInput } from './request-status.js';
 
 const requestSelect = {
   id: true,
@@ -113,6 +114,30 @@ export class RequestsService {
     } catch (error) {
       if (this.isDatabaseError(error, 'P2025')) {
         await this.editable(id, requesterId);
+        throw new ConflictException();
+      }
+      throw error;
+    }
+  }
+
+  async changeStatus(id: string, target: ChangeStatusInput['status']) {
+    const current = await this.get(id);
+    const previous =
+      target === 'IN_PROGRESS'
+        ? 'OPEN'
+        : target === 'COMPLETED'
+          ? 'IN_PROGRESS'
+          : undefined;
+    if (!previous || current.status !== previous) throw new ConflictException();
+    try {
+      return await this.prisma.request.update({
+        where: { id, status: previous },
+        data: { status: target },
+        select: requestSelect,
+      });
+    } catch (error) {
+      if (this.isDatabaseError(error, 'P2025')) {
+        await this.get(id);
         throw new ConflictException();
       }
       throw error;

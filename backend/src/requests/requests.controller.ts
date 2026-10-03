@@ -30,6 +30,8 @@ import { RequestResponse } from './request-response.js';
 import { RequestsService } from './requests.service.js';
 import { requestFiltersSchema, requestIdSchema } from './request-filters.js';
 import type { RequestFilters } from './request-filters.js';
+import { changeStatusBody, changeStatusSchema } from './request-status.js';
+import type { ChangeStatusInput } from './request-status.js';
 
 @ApiTags('Requests')
 @ApiCookieAuth()
@@ -90,6 +92,26 @@ export class RequestsController {
     @Req() request: AuthRequest,
   ) {
     return this.requests.remove(id, this.requester(request));
+  }
+
+  @Patch(':id/status')
+  @ApiParam({ name: 'id', type: String, format: 'uuid' })
+  @ApiHeader({ name: 'X-CSRF-Token', required: true })
+  @ApiBody({ schema: changeStatusBody })
+  @ApiOkResponse({ type: RequestResponse })
+  @ApiResponse({ status: 400, description: 'Status, campos ou ID inválidos.' })
+  @ApiResponse({ status: 401, description: 'Sessão válida obrigatória.' })
+  @ApiResponse({ status: 403, description: 'CSRF ou origem inválida.' })
+  @ApiResponse({ status: 404, description: 'Solicitação inexistente.' })
+  @ApiResponse({
+    status: 409,
+    description: 'Transição incompatível com o estado atual.',
+  })
+  changeStatus(
+    @Param('id', new ZodPipe(requestIdSchema)) id: string,
+    @Body(new ZodPipe(changeStatusSchema)) input: ChangeStatusInput,
+  ) {
+    return this.requests.changeStatus(id, input.status);
   }
 
   @Get()
