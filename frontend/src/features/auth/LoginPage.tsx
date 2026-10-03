@@ -36,8 +36,7 @@ export function LoginPage() {
               </h1>
             </CardTitle>
             <CardDescription>
-              Demonstração com autenticação simulada em memória. Ainda não há
-              sessão real de backend.
+              Entre para acompanhar e registrar solicitações internas.
             </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-5">

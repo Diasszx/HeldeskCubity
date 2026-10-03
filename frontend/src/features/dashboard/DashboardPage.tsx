@@ -15,10 +15,6 @@ export function DashboardPage({ services }: { services?: PortalServices }) {
           <Link to="/requests">Ver solicitações</Link>
         </Button>
       </SectionHeader>
-      <p className="mb-4 text-sm text-muted-foreground">
-        Demonstração com dados simulados. As alterações duram até recarregar a
-        página.
-      </p>
       <DashboardIndicators {...indicators} />
     </>
   )

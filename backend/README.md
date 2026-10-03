@@ -12,4 +12,4 @@ API NestJS 12 em ESM com TypeScript, Express, Zod e Prisma 7. PostgreSQL executa
 
 Na raiz: preparar .docker/database.env a partir do exemplo e executar docker compose up -d db. Dentro de backend: npm ci, configurar .env, npm run db:deploy e npm run dev. Seed é explícito, conforme DATABASE.md. Não versionar arquivos de ambiente locais.
 
-Health, Swagger, autenticação por sessão PostgreSQL, catálogos, cadastro, consultas, indicadores, edição, exclusão e atendimento estão implementados. O frontend continua com mocks até a integração. O Compose contém banco de desenvolvimento e serviço opcional de testes; ainda não inicia API e frontend.
+Health, Swagger, autenticação por sessão PostgreSQL, catálogos, cadastro, consultas, indicadores, edição, exclusão e atendimento estão implementados. O frontend consome esses endpoints; veja a [execução integrada](../frontend/README.md). O Compose contém banco de desenvolvimento e serviço opcional de testes; ainda não inicia API e frontend.

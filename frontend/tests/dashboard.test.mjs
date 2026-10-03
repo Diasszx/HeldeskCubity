@@ -22,7 +22,7 @@ test('empty dataset yields four zero counts and fixtures sum to total', async ()
   })
 })
 
-test('dashboard never passes list filters and remains independent of filtered results', async () => {
+test('dashboard uses global indicators independently of filtered lists', async () => {
   const { services } = createMockServices({ latencyMs: 0 })
   assert.equal(
     (await services.requests.list({ status: 'OPEN', title: 'acesso' })).length,
@@ -32,9 +32,8 @@ test('dashboard never passes list filters and remains independent of filtered re
     ...services,
     requests: {
       ...services.requests,
-      list: async (...args) => {
-        assert.equal(args.length, 0)
-        return services.requests.list()
+      list: async () => {
+        assert.fail('Dashboard must not download the requests list')
       },
     },
   }
