@@ -31,10 +31,6 @@ function RequestDetailsContent({
           <Link to="/requests">← Voltar para solicitações</Link>
         </Button>
       </SectionHeader>
-      <p className="mb-4 text-sm text-muted-foreground">
-        Demonstração com dados simulados. As alterações duram até recarregar a
-        página.
-      </p>
       {details.state.phase === 'loading' && (
         <p role="status">Carregando solicitação…</p>
       )}

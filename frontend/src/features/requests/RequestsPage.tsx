@@ -27,9 +27,6 @@ export function RequestsPage({ services }: { services?: PortalServices }) {
           </Link>
         </Button>
       </SectionHeader>
-      <p className="mb-4 text-sm text-muted-foreground">
-        Demonstração com dados simulados.
-      </p>
       <div className="grid min-w-0 grid-cols-1 gap-6">
         <RequestFiltersForm
           categories={list.categories}

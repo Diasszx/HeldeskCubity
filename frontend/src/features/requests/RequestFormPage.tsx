@@ -42,10 +42,6 @@ function RequestFormContent({
           <Link to="/requests">← Voltar para solicitações</Link>
         </Button>
       </SectionHeader>
-      <p className="mb-4 text-sm text-muted-foreground">
-        Demonstração com dados simulados. As alterações duram até recarregar a
-        página.
-      </p>
       {form.state.phase === 'loading' && (
         <p role="status">Carregando formulário…</p>
       )}
