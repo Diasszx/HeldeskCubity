@@ -1,6 +1,6 @@
 # Base da API
 
-Base ESM com type: module e TypeScript NodeNext. Node.js 24, NestJS 12, Express, TypeScript 5.9, Zod 4, Prisma 7 e PostgreSQL. O package-lock.json registra as versões instaladas. Sessões PostgreSQL, autenticação, catálogos, cadastro, consultas e indicadores estão implementados; edição, exclusão e atendimento seguem na próxima etapa.
+Base ESM com type: module e TypeScript NodeNext. Node.js 24, NestJS 12, Express, TypeScript 5.9, Zod 4, Prisma 7 e PostgreSQL. O package-lock.json registra as versões instaladas. Autenticação e operações de negócio estão implementadas; integração do frontend, CI completo e Compose da aplicação seguem nas etapas próprias.
 
 ## Executar
 
@@ -20,6 +20,7 @@ Copie o exemplo somente se .env ainda não existir. Não publique esse arquivo. 
 - Health e Swagger são públicos. Login, identidade, logout e CSRF estão documentados em [AUTHENTICATION.md](AUTHENTICATION.md); demais controllers exigem sessão por padrão. Nenhuma rota de negócio foi simulada.
 - GET /api/users, GET /api/categories e POST /api/requests estão documentados em [REQUESTS.md](REQUESTS.md).
 - GET /api/requests, GET /api/requests/:id e GET /api/dashboard estão documentados em [QUERIES.md](QUERIES.md).
+- PATCH /api/requests/:id, DELETE /api/requests/:id e PATCH /api/requests/:id/status estão documentados em [ACTIONS.md](ACTIONS.md).
 
 PrismaService usa o adapter PostgreSQL, abre conexões sob demanda e desconecta no encerramento. O schema e as migrations de persistência estão documentados em [DATABASE.md](DATABASE.md). npm ci gera o cliente ESM local ignorado pelo Git, sem consultar o banco.
 
@@ -37,7 +38,7 @@ Erros HTTP usam {"code":"NOT_FOUND","message":"Recurso não encontrado."}. Códi
 
 ## Limites
 
-Docker Compose do banco está disponível na raiz, com serviço separado para testes. Esta base executa no host; imagens da API e do frontend e startup integrado ficam para a etapa de infraestrutura completa. Migrations e seed são explícitos, conforme DATABASE.md. Ainda não há edição/exclusão/atendimento ou integração com o frontend.
+Docker Compose do banco está disponível na raiz, com serviço separado para testes. Esta base executa no host; imagens da API e do frontend e startup integrado ficam para a etapa de infraestrutura completa. Migrations e seed são explícitos, conforme DATABASE.md. Ainda não há integração com o frontend.
 
 Versões instaladas: Node 24.14.1, NestJS 12.1.2, @nestjs/config 12.0.1, Swagger 12.0.2, Prisma e adapter-pg 7.10.0, pg 8.23.1 e Zod 4.6.5. O CLI Prisma exige overrides transitivos para deepmerge-ts 8.0.2 e mysql2 3.24.5; geração e instalação são verificadas com essa configuração. Remover os overrides quando o upstream incorporar as correções. npm audit reportou zero vulnerabilidades após esses ajustes. As migrations são verificadas na etapa de persistência.
 
@@ -45,6 +46,6 @@ Referências: [NestJS Swagger](https://docs.nestjs.com/openapi/security), [gera�
 
 ## Evidências da entrega
 
-npm ci passou com geração automática do Prisma ESM. npm run check passou: tipos, lint, formatação, 19 testes em quatro suites e build. Na validação da base, npm run dev e npm start iniciaram a aplicação; health respondeu por HTTP e Swagger foi verificado no navegador. O startup com configuração inválida retornou código 1, informando nomes de variáveis sem expor os valores de teste. As verificações de conexão, migrations e seed estão registradas em DATABASE.md; os 77 testes PostgreSQL de persistência, autenticação, cadastro e consultas estão descritos também em AUTHENTICATION.md, REQUESTS.md e QUERIES.md.
+npm ci passou com geração automática do Prisma ESM. npm run check passou: tipos, lint, formatação, 19 testes em quatro suites e build. Na validação da base, npm run dev e npm start iniciaram a aplicação; health respondeu por HTTP e Swagger foi verificado no navegador. O startup com configuração inválida retornou código 1, informando nomes de variáveis sem expor os valores de teste. As verificações de conexão, migrations e seed estão registradas em DATABASE.md; os 110 testes PostgreSQL de persistência, autenticação, cadastro, consultas e ações estão descritos também em AUTHENTICATION.md, REQUESTS.md, QUERIES.md e ACTIONS.md.
 
 Desenvolvimento compila TypeScript com metadata de decorators e executa o JavaScript ESM no Node em watch. Jest utiliza --experimental-vm-modules somente nos testes. Código da aplicação e Prisma gerado permanecem ESM também no build de produção.
