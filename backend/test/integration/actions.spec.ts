@@ -4,6 +4,7 @@ import { spawnSync } from 'node:child_process';
 import type { INestApplication } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
+import { jest } from '@jest/globals';
 import { hash } from 'bcrypt';
 import request from 'supertest';
 import { PrismaPg } from '@prisma/adapter-pg';
@@ -13,6 +14,7 @@ import {
 } from '../../src/generated/prisma/client.js';
 import { validateEnvironment } from '../../src/config/environment.js';
 import { setupApplication } from '../../src/setup.js';
+import { RequestsService } from '../../src/requests/requests.service.js';
 
 let app: INestApplication;
 let client: PrismaClient;
@@ -324,6 +326,92 @@ it('strictly validates the status body', async () => {
       .expect(400);
   }
   expect(await stored(row.id)).toEqual(row);
+});
+
+// Pausa leituras reais do service para intercalar operações HTTP, sem simular a escrita.
+function pausedReads(count: number) {
+  const service = app.get(RequestsService);
+  const original = service.get.bind(service);
+  let release!: () => void;
+  let arrived!: () => void;
+  const gate = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  const ready = new Promise<void>((resolve) => {
+    arrived = resolve;
+  });
+  let reads = 0;
+  const spy = jest.spyOn(service, 'get');
+  for (let index = 0; index < count; index++)
+    spy.mockImplementationOnce(async (id) => {
+      const row = await original(id);
+      if (++reads === count) arrived();
+      await gate;
+      return row;
+    });
+  return { ready, release, restore: () => spy.mockRestore() };
+}
+
+it.each(['edit', 'delete'])(
+  'blocks a stale %s after concurrent attendance, with unchanged content',
+  async (operation) => {
+    const row = await fixture();
+    const barrier = pausedReads(1);
+    const pending = (
+      operation === 'edit' ? edit(owner, row.id) : remove(owner, row.id)
+    ).then((result) => result);
+    try {
+      await barrier.ready;
+      await advance(other, row.id, 'IN_PROGRESS').expect(200);
+      barrier.release();
+      expect((await pending).status).toBe(409);
+      expect(await stored(row.id)).toEqual({ ...row, status: 'IN_PROGRESS' });
+    } finally {
+      barrier.release();
+      barrier.restore();
+      await pending;
+    }
+  },
+);
+
+it('permits only one of two transitions that both read OPEN before writing', async () => {
+  const row = await fixture();
+  const barrier = pausedReads(2);
+  const first = advance(owner, row.id, 'IN_PROGRESS').then((result) => result);
+  const second = advance(other, row.id, 'IN_PROGRESS').then((result) => result);
+  try {
+    await barrier.ready;
+    barrier.release();
+    expect(
+      (await Promise.all([first, second]))
+        .map((result) => result.status)
+        .sort(),
+    ).toEqual([200, 409]);
+    expect(await stored(row.id)).toEqual({ ...row, status: 'IN_PROGRESS' });
+  } finally {
+    barrier.release();
+    barrier.restore();
+    await Promise.all([first, second]);
+  }
+});
+
+it('returns 404 when the row is deleted after the transition read', async () => {
+  const row = await fixture();
+  const barrier = pausedReads(1);
+  const pending = advance(other, row.id, 'IN_PROGRESS').then(
+    (result) => result,
+  );
+  try {
+    await barrier.ready;
+    await remove(owner, row.id).expect(204);
+    barrier.release();
+    expect((await pending).status).toBe(404);
+    expect(await stored(row.id)).toBeNull();
+  } finally {
+    barrier.release();
+    barrier.restore();
+    await pending;
+  }
 });
 
 it('publishes action status codes and strict bodies in OpenAPI', async () => {
