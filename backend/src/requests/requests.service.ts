@@ -1,5 +1,7 @@
 import {
   BadRequestException,
+  ConflictException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -8,6 +10,7 @@ import { PrismaService } from '../prisma/prisma.service.js';
 import type { CreateRequestInput } from './request-input.js';
 import { escapeSearch, utcPeriod } from './request-filters.js';
 import type { RequestFilters } from './request-filters.js';
+import type { ChangeStatusInput } from './request-status.js';
 
 const requestSelect = {
   id: true,
@@ -63,6 +66,82 @@ export class RequestsService {
     });
     if (!result) throw new NotFoundException();
     return result;
+  }
+
+  private async editable(id: string, requesterId: string) {
+    const current = await this.get(id);
+    if (current.requesterId !== requesterId) throw new ForbiddenException();
+    if (current.status !== 'OPEN') throw new ConflictException();
+    return current;
+  }
+
+  private isDatabaseError(error: unknown, code: string) {
+    return (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === code
+    );
+  }
+
+  async update(id: string, input: CreateRequestInput, requesterId: string) {
+    await this.editable(id, requesterId);
+    await this.requireCategory(input.categoryId);
+    try {
+      return await this.prisma.request.update({
+        where: { id, requesterId, status: 'OPEN' },
+        data: {
+          title: input.title,
+          description: input.description,
+          categoryId: input.categoryId,
+        },
+        select: requestSelect,
+      });
+    } catch (error) {
+      if (this.isDatabaseError(error, 'P2025')) {
+        await this.editable(id, requesterId);
+        throw new ConflictException();
+      }
+      if (this.isDatabaseError(error, 'P2003')) throw new BadRequestException();
+      throw error;
+    }
+  }
+
+  async remove(id: string, requesterId: string) {
+    await this.editable(id, requesterId);
+    try {
+      await this.prisma.request.delete({
+        where: { id, requesterId, status: 'OPEN' },
+      });
+    } catch (error) {
+      if (this.isDatabaseError(error, 'P2025')) {
+        await this.editable(id, requesterId);
+        throw new ConflictException();
+      }
+      throw error;
+    }
+  }
+
+  async changeStatus(id: string, target: ChangeStatusInput['status']) {
+    const current = await this.get(id);
+    const previous =
+      target === 'IN_PROGRESS'
+        ? 'OPEN'
+        : target === 'COMPLETED'
+          ? 'IN_PROGRESS'
+          : undefined;
+    if (!previous || current.status !== previous) throw new ConflictException();
+    try {
+      return await this.prisma.request.update({
+        where: { id, status: previous },
+        data: { status: target },
+        select: requestSelect,
+      });
+    } catch (error) {
+      if (this.isDatabaseError(error, 'P2025')) {
+        await this.get(id);
+        throw new ConflictException();
+      }
+      throw error;
+    }
   }
 
   async create(input: CreateRequestInput, requesterId: string) {
