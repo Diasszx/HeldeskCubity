@@ -1,0 +1,11 @@
+node_modules
+dist
+coverage
+.env*
+src/generated
+test
+specs
+AGENTS.md
+TECHNOLOGIES.md
+*.log
+.git
