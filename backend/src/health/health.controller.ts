@@ -1,9 +1,11 @@
+import { Public } from '../auth/public.decorator.js';
 import { Controller, Get } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Health — público')
 @Controller('health')
 export class HealthController {
+  @Public()
   @Get()
   @ApiOperation({
     summary: 'Verifica o processo da API; não verifica o banco.',

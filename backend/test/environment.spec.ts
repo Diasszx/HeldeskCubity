@@ -30,3 +30,52 @@ describe('Environment', () => {
     },
   );
 });
+
+it('defines rolling session defaults and validates explicit trusted proxy IPs', () => {
+  expect(validateEnvironment(valid)).toMatchObject({
+    SESSION_TTL_SECONDS: 28800,
+    APP_ORIGIN: 'http://127.0.0.1:3000',
+    TRUSTED_PROXY_IPS: [],
+  });
+  expect(
+    validateEnvironment({
+      ...valid,
+      TRUSTED_PROXY_IPS: '127.0.0.1, ::1',
+      SESSION_TTL_SECONDS: '3600',
+    }),
+  ).toMatchObject({
+    TRUSTED_PROXY_IPS: ['127.0.0.1', '::1'],
+    SESSION_TTL_SECONDS: 3600,
+  });
+  for (const value of ['true', '*', '1', 'loopback'])
+    expect(() =>
+      validateEnvironment({ ...valid, TRUSTED_PROXY_IPS: value }),
+    ).toThrow('TRUSTED_PROXY_IPS');
+});
+
+it('rejects production HTTP origins and public secret placeholders', () => {
+  expect(() =>
+    validateEnvironment({ ...valid, NODE_ENV: 'production' }),
+  ).toThrow('APP_ORIGIN');
+  expect(() =>
+    validateEnvironment({
+      ...valid,
+      NODE_ENV: 'production',
+      APP_ORIGIN: 'https://portal.test',
+      SESSION_SECRET: 'replace-with-a-random-secret-at-least-32-characters',
+    }),
+  ).toThrow('SESSION_SECRET');
+  expect(
+    validateEnvironment({
+      ...valid,
+      NODE_ENV: 'production',
+      APP_ORIGIN: 'https://portal.test',
+    }).APP_ORIGIN,
+  ).toBe('https://portal.test');
+  expect(() =>
+    validateEnvironment({ ...valid, APP_ORIGIN: 'https://portal.test/path' }),
+  ).toThrow('APP_ORIGIN');
+  expect(() =>
+    validateEnvironment({ ...valid, SESSION_TTL_SECONDS: '0' }),
+  ).toThrow('SESSION_TTL_SECONDS');
+});

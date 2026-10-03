@@ -1,6 +1,6 @@
 # Base da API
 
-Base ESM com type: module e TypeScript NodeNext. Node.js 24, NestJS 12, Express, TypeScript 5.9, Zod 4, Prisma 7 e PostgreSQL. O package-lock.json registra as versões instaladas. Sessões e regras de negócio serão implementadas nas próximas etapas.
+Base ESM com type: module e TypeScript NodeNext. Node.js 24, NestJS 12, Express, TypeScript 5.9, Zod 4, Prisma 7 e PostgreSQL. O package-lock.json registra as versões instaladas. Sessões PostgreSQL e autenticação estão implementadas; regras de negócio seguem nas próximas etapas.
 
 ## Executar
 
@@ -13,11 +13,11 @@ Copy-Item .env.example .env
 npm run dev
 ```
 
-Copie o exemplo somente se .env ainda não existir. Não publique esse arquivo. PORT é 3000 e HOST é 127.0.0.1 por padrão. NODE_ENV aceita development, test ou production. DATABASE_URL deve usar postgres:// ou postgresql://; SESSION_SECRET é obrigatório, antecipando a configuração de sessões. O valor do exemplo é público e deve ser substituído.
+Copie o exemplo somente se .env ainda não existir. Não publique esse arquivo. PORT é 3000 e HOST é 127.0.0.1 por padrão. NODE_ENV aceita development, test ou production. DATABASE_URL deve usar postgres:// ou postgresql://; SESSION_SECRET é obrigatório para assinar o cookie de sessão. O valor do exemplo é público e deve ser substituído.
 
 - GET /api/health retorna {"status":"ok"}: verifica o processo, sem verificar conectividade do banco.
 - /api/docs apresenta Swagger; /api/docs-json apresenta OpenAPI.
-- O health é público. O esquema de sessão por cookie está documentado para as próximas rotas protegidas, mas não existe autenticação implementada nesta etapa. Nenhuma rota de negócio foi simulada.
+- Health e Swagger são públicos. Login, identidade, logout e CSRF estão documentados em [AUTHENTICATION.md](AUTHENTICATION.md); demais controllers exigem sessão por padrão. Nenhuma rota de negócio foi simulada.
 
 PrismaService usa o adapter PostgreSQL, abre conexões sob demanda e desconecta no encerramento. O schema e as migrations de persistência estão documentados em [DATABASE.md](DATABASE.md). npm ci gera o cliente ESM local ignorado pelo Git, sem consultar o banco.
 
@@ -35,7 +35,7 @@ Erros HTTP usam {"code":"NOT_FOUND","message":"Recurso não encontrado."}. Códi
 
 ## Limites
 
-Docker Compose do banco está disponível na raiz, com serviço separado para testes. Esta base executa no host; imagens da API e do frontend e startup integrado ficam para a etapa de infraestrutura completa. Migrations e seed são explícitos, conforme DATABASE.md. Ainda não há autenticação, CSRF ou endpoints de negócio.
+Docker Compose do banco está disponível na raiz, com serviço separado para testes. Esta base executa no host; imagens da API e do frontend e startup integrado ficam para a etapa de infraestrutura completa. Migrations e seed são explícitos, conforme DATABASE.md. Ainda não há endpoints de negócio ou integração da autenticação com o frontend.
 
 Versões instaladas: Node 24.14.1, NestJS 12.1.2, @nestjs/config 12.0.1, Swagger 12.0.2, Prisma e adapter-pg 7.10.0, pg 8.23.1 e Zod 4.6.5. O CLI Prisma exige overrides transitivos para deepmerge-ts 8.0.2 e mysql2 3.24.5; geração e instalação são verificadas com essa configuração. Remover os overrides quando o upstream incorporar as correções. npm audit reportou zero vulnerabilidades após esses ajustes. As migrations são verificadas na etapa de persistência.
 
@@ -43,6 +43,6 @@ Referências: [NestJS Swagger](https://docs.nestjs.com/openapi/security), [gera�
 
 ## Evidências da entrega
 
-npm ci passou com geração automática do Prisma ESM. npm run check passou: tipos, lint, formatação, 15 testes em três suites e build. npm run dev e npm start iniciaram a aplicação; health respondeu por HTTP e Swagger foi verificado no navegador. O startup com configuração inválida retornou código 1, informando nomes de variáveis sem expor os valores de teste. As verificações de conexão, migrations e seed estão registradas em DATABASE.md.
+npm ci passou com geração automática do Prisma ESM. npm run check passou: tipos, lint, formatação, 17 testes em três suites e build. npm run dev e npm start iniciaram a aplicação; health respondeu por HTTP e Swagger foi verificado no navegador. O startup com configuração inválida retornou código 1, informando nomes de variáveis sem expor os valores de teste. As verificações de conexão, migrations e seed estão registradas em DATABASE.md.
 
 Desenvolvimento compila TypeScript com metadata de decorators e executa o JavaScript ESM no Node em watch. Jest utiliza --experimental-vm-modules somente nos testes. Código da aplicação e Prisma gerado permanecem ESM também no build de produção.

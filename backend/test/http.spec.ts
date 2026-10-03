@@ -1,3 +1,4 @@
+import { ConfigModule } from '@nestjs/config';
 import 'reflect-metadata';
 import {
   INestApplication,
@@ -21,7 +22,10 @@ class ErrorController {
     throw new Error('DATABASE_PASSWORD_PRIVATE');
   }
 }
-@Module({ controllers: [HealthController, ErrorController] })
+@Module({
+  imports: [ConfigModule.forRoot({ ignoreEnvFile: true })],
+  controllers: [HealthController, ErrorController],
+})
 class TestModule {}
 
 describe('HTTP base', () => {
@@ -79,7 +83,7 @@ describe('HTTP base', () => {
     expect(result.body.components.securitySchemes.cookie).toMatchObject({
       type: 'apiKey',
       in: 'cookie',
-      name: 'connect.sid',
+      name: 'cubity.sid',
     });
     await request(app.getHttpServer()).get('/api/docs/').expect(200);
   });
