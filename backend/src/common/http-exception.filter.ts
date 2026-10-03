@@ -31,6 +31,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     };
     if (status >= 500)
       this.logger.error('Falha interna ao processar requisição.');
+    if (response.headersSent) return;
     response.status(status).json({
       code: codes[status] ?? 'INTERNAL_ERROR',
       message: messages[status] ?? 'Não foi possível processar a requisição.',
