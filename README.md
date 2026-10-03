@@ -5,7 +5,11 @@ Portal de Solicitações Internas.
 ## Estrutura
 
 - `frontend/`: aplicação web em React, Vite e TypeScript.
-- `backend/`: diretório reservado para a API; implementação pendente.
+- `backend/`: API NestJS em ESM, Prisma, migrations e seed PostgreSQL.
+
+## Fase backend e Docker
+
+A API usa NestJS em ESM, Prisma e PostgreSQL. PostgreSQL possui configuração de container em compose.yaml; as [instruções do backend](backend/README.md) explicam variáveis, startup e persistência. O Compose será ampliado para iniciar frontend, API e banco com um único comando. Instruções de agentes e specs são arquivos locais, não versionados.
 
 ## Executar o frontend
 
@@ -19,6 +23,7 @@ npm run dev
 ## Verificações
 
 Na pasta `frontend`, execute `npm run check` para design system, tipos, lint, formatação, testes e build.
+
 ## Integração contínua
 
 O workflow `.github/workflows/frontend-ci.yml` executa em pushes e pull requests para `main`, além de execução manual. Usa Node 24, cache npm e instalação reproduzível com `npm ci`. Executa lint, tipos, formatação, testes e build; uma falha interrompe o job.
