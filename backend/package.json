@@ -1,0 +1,64 @@
+{
+  "name": "cubity-support-api",
+  "version": "0.1.0",
+  "description": "API NestJS do Cubity Support",
+  "scripts": {
+    "dev": "npm run build && concurrently --kill-others \"tsc -p tsconfig.build.json --watch --preserveWatchOutput\" \"node --watch dist/main.js\"",
+    "generate": "prisma generate",
+    "postinstall": "prisma generate",
+    "build": "npm run generate && tsc -p tsconfig.build.json",
+    "start": "node dist/main.js",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src test",
+    "format": "prettier --write src test *.json *.mjs prisma.config.ts",
+    "format:check": "prettier --check src test *.json *.mjs prisma.config.ts",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand",
+    "check": "npm run generate && npm run typecheck && npm run lint && npm run format:check && npm test && npm run build"
+  },
+  "license": "ISC",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/express": "^5.0.6",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^26.6.4",
+    "@types/pg": "^8.23.1",
+    "@types/supertest": "^7.2.1",
+    "concurrently": "^10.0.5",
+    "eslint": "^10.12.0",
+    "eslint-config-prettier": "^10.1.8",
+    "jest": "^30.5.2",
+    "prettier": "^3.9.9",
+    "prisma": "^7.10.0",
+    "supertest": "^7.3.1",
+    "ts-jest": "^29.4.14",
+    "typescript": "5.9",
+    "typescript-eslint": "^8.71.0"
+  },
+  "dependencies": {
+    "@nestjs/common": "^12.1.2",
+    "@nestjs/config": "^12.0.1",
+    "@nestjs/core": "^12.1.2",
+    "@nestjs/platform-express": "^12.1.2",
+    "@nestjs/swagger": "^12.0.2",
+    "@prisma/adapter-pg": "^7.10.0",
+    "@prisma/client": "^7.10.0",
+    "dotenv": "^18.0.5",
+    "pg": "^8.23.1",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2",
+    "zod": "^4.6.5"
+  },
+  "overrides": {
+    "@prisma/config": {
+      "deepmerge-ts": "8.0.2"
+    },
+    "prisma": {
+      "mysql2": "3.24.5"
+    }
+  }
+}
