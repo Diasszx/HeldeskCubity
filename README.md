@@ -11,14 +11,16 @@ Portal de Solicitações Internas.
 
 A API usa NestJS em ESM, Prisma e PostgreSQL. PostgreSQL possui configuração de container em compose.yaml; as [instruções do backend](backend/README.md) explicam variáveis, startup e persistência. O Compose será ampliado para iniciar frontend, API e banco com um único comando. Instruções de agentes e specs são arquivos locais, não versionados.
 
-## Executar o frontend
+## Executar frontend e backend
 
-Requer Node.js 24 e npm. Na pasta `frontend`:
+Requer Node.js 24, npm e PostgreSQL em Docker. Prepare o banco e a API conforme o [backend](backend/README.md), configure `PORT=3001` e `APP_ORIGIN=http://127.0.0.1:5176`, e inicie a API. Em outro terminal, na pasta `frontend`:
 
 ```bash
 npm ci
 npm run dev
 ```
+
+Abra `http://127.0.0.1:5176`. Consulte o [guia de integração](frontend/README.md) para proxy, seed demo, sessão/CSRF, testes reais e distribuição.
 
 ## Verificações
 
@@ -28,10 +30,10 @@ Na pasta `frontend`, execute `npm run check` para design system, tipos, lint, fo
 
 O workflow `.github/workflows/frontend-ci.yml` executa em pushes e pull requests para `main`, além de execução manual. Usa Node 24, cache npm e instalação reproduzível com `npm ci`. Executa lint, tipos, formatação, testes e build; uma falha interrompe o job.
 
-Os testes usam o executor nativo do Node e cobrem o utilitário `cn`, regras do design system e operações/regras dos services simulados.
+Os testes do frontend usam o executor nativo do Node e cobrem design system, formulários, regras de UI e transporte HTTP. O workflow do backend também executa os services reais do frontend contra NestJS e PostgreSQL exclusivo de testes, incluindo CSRF e cookie invalidado após logout.
 
-## Services de demonstração
+## Integração com a API
 
-A SPEC-003 define contratos e services assíncronos com dados em memória. Não há API, persistência real ou autenticação implementada. Recarregar a página restaura as fixtures. Consulte [a entrega da SPEC-003](frontend/SPEC-003.md) para uso, validação e limitações.
+Autenticação, catálogos, listagem, filtros, cadastro, edição, exclusão, atendimento e dashboard consomem a API. As solicitações e sessões persistem no PostgreSQL; recarregar o frontend recupera a sessão e os dados. Mocks são utilizados somente nos testes.
 
-A SPEC-004 implementa a listagem em `/requests`, com filtros combinados por título, categoria, status e período inclusivo em UTC. Inclui limpeza, carregamento, resultado vazio e erro com nova tentativa. Formulários e detalhes continuam provisórios. Consulte [a entrega da SPEC-004](frontend/SPEC-004.md).
+A listagem em `/requests` combina título, categoria, status e período inclusivo em UTC. O dashboard apresenta indicadores globais. Edição e exclusão exigem solicitação própria e aberta; atendimento permite apenas Aberto → Em Atendimento → Concluído, com validação também no backend.
