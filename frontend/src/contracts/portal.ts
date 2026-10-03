@@ -32,7 +32,7 @@ export interface RequestFilters {
   title?: string
   categoryId?: Category['id']
   status?: RequestStatus
-  /** Inclusive YYYY-MM-DD. Mock uses UTC; final API timezone is pending. */
+  /** Inclusive YYYY-MM-DD, covering the entire day in UTC. */
   startDate?: string
   endDate?: string
 }
@@ -62,5 +62,15 @@ export interface PortalServices {
   }
   users: UsersService
   categories: CategoriesService
+  dashboard: {
+    indicators(): Promise<DashboardIndicators>
+  }
   requests: RequestsService
+}
+
+export interface DashboardIndicators {
+  total: number
+  open: number
+  inProgress: number
+  completed: number
 }

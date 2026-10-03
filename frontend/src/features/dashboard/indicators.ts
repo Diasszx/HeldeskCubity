@@ -16,5 +16,5 @@ export type RequestIndicators = ReturnType<typeof countRequests>
 export async function loadIndicators(
   services: PortalServices,
 ): Promise<RequestIndicators> {
-  return countRequests(await services.requests.list())
+  return services.dashboard.indicators()
 }

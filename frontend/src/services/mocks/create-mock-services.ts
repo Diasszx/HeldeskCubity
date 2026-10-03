@@ -113,6 +113,23 @@ export function createMockServices(options: MockOptions = {}): MockPortal {
           return categories
         }),
     },
+    dashboard: {
+      indicators: () =>
+        execute(() => {
+          requireUser()
+          return {
+            total: requests.length,
+            open: requests.filter((request) => request.status === 'OPEN')
+              .length,
+            inProgress: requests.filter(
+              (request) => request.status === 'IN_PROGRESS',
+            ).length,
+            completed: requests.filter(
+              (request) => request.status === 'COMPLETED',
+            ).length,
+          }
+        }),
+    },
     requests: {
       list: (filters = {}) =>
         execute(() => {

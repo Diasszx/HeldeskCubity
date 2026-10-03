@@ -18,6 +18,7 @@ export function createSessionServices(base: PortalServices) {
       list: () => observe(() => base.users.list()),
     },
     categories: { list: () => observe(() => base.categories.list()) },
+    dashboard: { indicators: () => observe(() => base.dashboard.indicators()) },
     requests: {
       list: (filters) => observe(() => base.requests.list(filters)),
       get: (id) => observe(() => base.requests.get(id)),
