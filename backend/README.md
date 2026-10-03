@@ -1,3 +1,10 @@
 # Backend
 
-Diretório reservado para a API do Portal de Solicitações Internas. A implementação ainda não foi iniciada.
+API NestJS 12 em ESM com TypeScript, Express, Zod e Prisma 7. PostgreSQL executa em Docker Compose com volume persistente; os testes usam um serviço separado.
+
+- [Execução e configuração da API](BASE_API.md)
+- [Modelo, migrations, seed e testes de banco](DATABASE.md)
+
+Na raiz: preparar .docker/database.env a partir do exemplo e executar docker compose up -d db. Dentro de backend: npm ci, configurar .env, npm run db:deploy e npm run dev. Seed é explícito, conforme DATABASE.md. Não versionar arquivos de ambiente locais.
+
+Health e Swagger estão implementados. Autenticação, regras e endpoints de negócio serão adicionados nas próximas etapas. O Compose contém banco de desenvolvimento e serviço opcional de testes; ainda não inicia API e frontend.
