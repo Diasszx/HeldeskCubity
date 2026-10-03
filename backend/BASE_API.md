@@ -1,6 +1,6 @@
 # Base da API
 
-Base ESM com type: module e TypeScript NodeNext. Node.js 24, NestJS 12, Express, TypeScript 5.9, Zod 4, Prisma 7 e PostgreSQL. O package-lock.json registra as versões instaladas. Autenticação e operações de negócio estão implementadas; integração do frontend, CI completo e Compose da aplicação seguem nas etapas próprias.
+Base ESM com type: module e TypeScript NodeNext. Node.js 24, NestJS 12, Express, TypeScript 5.9, Zod 4, Prisma 7 e PostgreSQL. O package-lock.json registra as versões instaladas. Autenticação e operações de negócio estão implementadas; o CI está descrito em [TESTING.md](TESTING.md), e integração do frontend e Compose da aplicação seguem nas etapas próprias.
 
 ## Executar
 
@@ -46,6 +46,6 @@ Referências: [NestJS Swagger](https://docs.nestjs.com/openapi/security), [gera�
 
 ## Evidências da entrega
 
-npm ci passou com geração automática do Prisma ESM. npm run check passou: tipos, lint, formatação, 19 testes em quatro suites e build. Na validação da base, npm run dev e npm start iniciaram a aplicação; health respondeu por HTTP e Swagger foi verificado no navegador. O startup com configuração inválida retornou código 1, informando nomes de variáveis sem expor os valores de teste. As verificações de conexão, migrations e seed estão registradas em DATABASE.md; os 110 testes PostgreSQL de persistência, autenticação, cadastro, consultas e ações estão descritos também em AUTHENTICATION.md, REQUESTS.md, QUERIES.md e ACTIONS.md.
+npm ci passou com geração automática do Prisma ESM. npm run check passou: tipos, lint, formatação, 33 testes em cinco suites e build. Na validação da base, npm run dev e npm start iniciaram a aplicação; health respondeu por HTTP e Swagger foi verificado no navegador. O startup com configuração inválida retornou código 1, informando nomes de variáveis sem expor os valores de teste. As verificações de conexão, migrations e seed estão registradas em DATABASE.md; os 110 testes PostgreSQL de persistência, autenticação, cadastro, consultas e ações estão descritos também em AUTHENTICATION.md, REQUESTS.md, QUERIES.md e ACTIONS.md.
 
 Desenvolvimento compila TypeScript com metadata de decorators e executa o JavaScript ESM no Node em watch. Jest utiliza --experimental-vm-modules somente nos testes. Código da aplicação e Prisma gerado permanecem ESM também no build de produção.
