@@ -63,7 +63,7 @@ docker compose stop db
 docker compose down
 ```
 
-Esses comandos preservam o volume. Não utilizar down -v na rotina. Recriar o container com up -d --force-recreate db preserva o volume. Esta etapa não fornece containers da API/frontend; o Compose será ampliado mantendo esse serviço de banco.
+Esses comandos preservam o volume. Não utilizar down -v na rotina. Recriar o container com up -d --force-recreate db preserva o volume. O [Compose completo](../DOCKER.md) mantém esse serviço de banco e adiciona migrations, API e frontend, com instruções de backup e configuração HTTPS.
 
 ## Testes isolados
 
