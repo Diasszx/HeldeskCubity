@@ -1,18 +1,72 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Prisma } from '../generated/prisma/client.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import type { CreateRequestInput } from './request-input.js';
+import { escapeSearch, utcPeriod } from './request-filters.js';
+import type { RequestFilters } from './request-filters.js';
+
+const requestSelect = {
+  id: true,
+  code: true,
+  title: true,
+  description: true,
+  categoryId: true,
+  requesterId: true,
+  createdAt: true,
+  status: true,
+} satisfies Prisma.RequestSelect;
 
 @Injectable()
 export class RequestsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(input: CreateRequestInput, requesterId: string) {
+  private async requireCategory(id: string) {
     const category = await this.prisma.category.findUnique({
-      where: { id: input.categoryId },
+      where: { id },
       select: { id: true },
     });
     if (!category) throw new BadRequestException();
+  }
+
+  async list(filters: RequestFilters) {
+    if (filters.categoryId) await this.requireCategory(filters.categoryId);
+    const where: Prisma.RequestWhereInput = {
+      ...(filters.title
+        ? {
+            title: {
+              contains: escapeSearch(filters.title),
+              mode: 'insensitive',
+            },
+          }
+        : {}),
+      ...(filters.categoryId ? { categoryId: filters.categoryId } : {}),
+      ...(filters.status ? { status: filters.status } : {}),
+      ...(filters.startDate || filters.endDate
+        ? { createdAt: utcPeriod(filters) }
+        : {}),
+    };
+    return this.prisma.request.findMany({
+      where,
+      select: requestSelect,
+      orderBy: [{ createdAt: 'desc' }, { id: 'asc' }],
+    });
+  }
+
+  async get(id: string) {
+    const result = await this.prisma.request.findUnique({
+      where: { id },
+      select: requestSelect,
+    });
+    if (!result) throw new NotFoundException();
+    return result;
+  }
+
+  async create(input: CreateRequestInput, requesterId: string) {
+    await this.requireCategory(input.categoryId);
     try {
       return await this.prisma.request.create({
         data: {
@@ -21,16 +75,7 @@ export class RequestsService {
           categoryId: input.categoryId,
           requesterId,
         },
-        select: {
-          id: true,
-          code: true,
-          title: true,
-          description: true,
-          categoryId: true,
-          requesterId: true,
-          createdAt: true,
-          status: true,
-        },
+        select: requestSelect,
       });
     } catch (error) {
       // A referência pode desaparecer entre a consulta e a escrita.
