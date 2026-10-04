@@ -1,11 +1,13 @@
 import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
-import { AppModule } from './app.module.js';
+import { AppModule, observability } from './app.module.js';
 import { setupApplication } from './setup.js';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    instrument: observability.instrument,
+  });
   setupApplication(app);
   app.enableShutdownHooks();
   const config = app.get(ConfigService);
