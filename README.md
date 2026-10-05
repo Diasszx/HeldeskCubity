@@ -9,7 +9,7 @@ Portal de Solicitações Internas.
 
 ## Fase backend e Docker
 
-A API usa NestJS em ESM, Prisma e PostgreSQL. PostgreSQL possui configuração de container em compose.yaml; as [instruções do backend](backend/README.md) explicam variáveis, startup e persistência. O Compose será ampliado para iniciar frontend, API e banco com um único comando. Instruções de agentes e specs são arquivos locais, não versionados.
+A API usa NestJS em ESM, Prisma e PostgreSQL. O Compose inicia frontend, API e banco com um único comando após preparar as variáveis: `docker compose up --build -d --wait`. Acesse `http://127.0.0.1:8080`. O [guia Docker](DOCKER.md) explica ambiente, migrations, seed, HTTPS, persistência e backups. Instruções de agentes e specs são arquivos locais, não versionados.
 
 ## Executar frontend e backend
 

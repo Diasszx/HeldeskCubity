@@ -72,6 +72,6 @@ Validação manual realizada em 03/10/2026: login por Enter; cadastro e persist�
 
 ## Distribuição
 
-O build usa `/api` na mesma origem. O servidor que publicar os arquivos de `dist` deve encaminhar `/api` para NestJS e suportar as rotas da SPA. `vite preview` sozinho não fornece esse encaminhamento. Em produção, o backend exige HTTPS, segredo privado e origem correta. A execução de frontend, API e banco por um único Compose pertence à próxima etapa; esta integração utiliza o Compose existente apenas para PostgreSQL.
+O build usa `/api` na mesma origem. O [Compose completo](../DOCKER.md) serve `dist` pelo Nginx, encaminha `/api` para NestJS e suporta as rotas da SPA, em `http://127.0.0.1:8080` no modo local. `vite preview` sozinho não fornece esse encaminhamento. Em produção, o backend exige HTTPS, segredo privado e origem correta; o guia Docker documenta o override TLS e o proxy confiável.
 
 O build atual emite aviso de bundle acima de 500 kB; a integração não acrescenta pacotes. Divisão de código permanece uma melhoria futura.

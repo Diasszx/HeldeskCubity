@@ -1,0 +1,9 @@
+node_modules
+dist
+.env*
+portal-solicitacoes
+tests
+AGENTS.md
+SPEC-*.md
+*.log
+.git
