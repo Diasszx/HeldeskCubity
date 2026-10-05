@@ -8,10 +8,19 @@ import { UsersModule } from './users/users.module.js';
 import { CategoriesModule } from './categories/categories.module.js';
 import { RequestsModule } from './requests/requests.module.js';
 import { DashboardModule } from './dashboard/dashboard.module.js';
+import { createObservability } from './observability/observability.js';
+
+const configuration = ConfigModule.forRoot({
+  isGlobal: true,
+  validate: validateEnvironment,
+});
+// ConfigModule loads .env synchronously before the opt-in is evaluated.
+export const observability = createObservability(process.env);
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true, validate: validateEnvironment }),
+    configuration,
+    ...observability.imports,
     PrismaModule,
     AuthModule,
     UsersModule,

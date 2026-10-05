@@ -1,5 +1,6 @@
 import { isIP } from 'node:net';
 import { z } from 'zod';
+import { validateObservability } from '../observability/observability.js';
 
 const environmentSchema = z
   .object({
@@ -53,6 +54,7 @@ const environmentSchema = z
   });
 
 export function validateEnvironment(input: Record<string, unknown>) {
+  const observability = validateObservability(input);
   const result = environmentSchema.safeParse(input);
   if (!result.success) {
     const keys = [
@@ -62,5 +64,5 @@ export function validateEnvironment(input: Record<string, unknown>) {
       `Configuração inválida: ${keys.join(', ')}. Confira .env.example.`,
     );
   }
-  return result.data;
+  return { ...result.data, ...observability };
 }
