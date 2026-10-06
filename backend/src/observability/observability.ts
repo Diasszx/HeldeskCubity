@@ -48,7 +48,13 @@ const schema = z
   });
 
 export function validateObservability(input: Record<string, unknown>) {
-  const result = schema.safeParse(input);
+  const version =
+    input.OBSERVE_SERVICE_VERSION ??
+    (input.RENDER === 'true' ? input.RENDER_GIT_COMMIT : undefined);
+  const result = schema.safeParse({
+    ...input,
+    OBSERVE_SERVICE_VERSION: version,
+  });
   if (!result.success)
     throw new Error(
       `Configuração inválida: ${[...new Set(result.error.issues.map((issue) => issue.path.join('.')))].join(', ')}. Confira .env.example.`,

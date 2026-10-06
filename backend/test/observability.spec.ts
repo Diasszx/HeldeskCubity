@@ -18,6 +18,39 @@ const credentials = {
 };
 
 describe('Observability configuration', () => {
+  it('uses the deployed Render commit automatically and follows successive releases', () => {
+    for (const commit of ['a'.repeat(40), 'b'.repeat(40)]) {
+      expect(
+        validateObservability({ RENDER: 'true', RENDER_GIT_COMMIT: commit })
+          .OBSERVE_SERVICE_VERSION,
+      ).toBe(commit);
+    }
+  });
+  it('keeps an explicit version override and the local default', () => {
+    expect(
+      validateObservability({
+        RENDER: 'true',
+        RENDER_GIT_COMMIT: 'a'.repeat(40),
+        OBSERVE_SERVICE_VERSION: 'release-1',
+      }).OBSERVE_SERVICE_VERSION,
+    ).toBe('release-1');
+    expect(validateObservability({}).OBSERVE_SERVICE_VERSION).toBe('0.1.0');
+    expect(
+      validateObservability({ RENDER_GIT_COMMIT: 'a'.repeat(40) })
+        .OBSERVE_SERVICE_VERSION,
+    ).toBe('0.1.0');
+    expect(
+      validateObservability({ RENDER: 'true' }).OBSERVE_SERVICE_VERSION,
+    ).toBe('0.1.0');
+  });
+  it('validates automatic versions without leaking their value', () => {
+    expect(() =>
+      validateObservability({
+        RENDER: 'true',
+        RENDER_GIT_COMMIT: 'PRIVATE VALUE',
+      }),
+    ).toThrow('Configuração inválida: OBSERVE_SERVICE_VERSION.');
+  });
   it('has no module or instrument when disabled, even with credentials', () => {
     expect(createObservability({})).toEqual({
       imports: [],
