@@ -26,6 +26,23 @@ Abra `http://127.0.0.1:5176`. Consulte o [guia de integração](frontend/README.
 
 Na pasta `frontend`, execute `npm run check` para design system, tipos, lint, formatação, testes e build.
 
+## Publicação gratuita e entrega contínua
+
+O [guia Render + Neon](docs/CD.md) explica a criação das contas, segredos, provisionamento privado de usuários, publicação e rollback. [render.yaml](render.yaml) configura um serviço Free, React e API na mesma origem HTTPS e deploy automático apenas depois dos checks da `main`. O Compose local permanece independente. **Aplicação publicada:** [Cubity Support](https://cubity-support-demo.onrender.com/login).
+
+## Acesso público para avaliação
+
+[Abra o Cubity Support](https://cubity-support-demo.onrender.com/login). Credenciais fornecidas pelo responsável, com publicação expressamente autorizada:
+
+| Nome  | Usuário      | Senha            |
+| ----- | ------------ | ---------------- |
+| Ana   | `ana.demo`   | `anademo12345`   |
+| Bruno | `bruno.demo` | `brunodemo12345` |
+
+Use apenas dados fictícios neste ambiente compartilhado. Essas credenciais não incluem acesso ao banco nem o segredo de sessão. Publicar esta tabela não altera senhas existentes. A senha informada para Ana tem 11 caracteres: ela não atende ao mínimo de 12 para criar uma nova conta pelo provisionador. Para reproduzir em banco novo, escolha uma senha válida e atualize a documentação após configurá-la.
+
+As decisões estão no [complemento do memorial técnico](docs/MEMORIAL_CD.md); o [roteiro de screenshots do CD](docs/screenshots/CD.md) distingue evidências pendentes de capturas reais.
+
 ## Integração contínua
 
 O workflow `.github/workflows/frontend-ci.yml` executa em pushes e pull requests para `main`, além de execução manual. Usa Node 24, cache npm e instalação reproduzível com `npm ci`. Executa lint, tipos, formatação, testes e build; uma falha interrompe o job.
