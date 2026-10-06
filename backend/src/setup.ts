@@ -2,14 +2,14 @@ import { ConfigService } from '@nestjs/config';
 import type { INestApplication } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { HttpExceptionFilter } from './common/http-exception.filter.js';
+import { frontendMiddleware } from './hosting/frontend.js';
+import { setupProxy } from './hosting/proxy.js';
 
 export function setupApplication(app: INestApplication) {
   const envConfig = app.get(ConfigService);
-  const ips = envConfig.get<string[]>('TRUSTED_PROXY_IPS') ?? [];
-  app
-    .getHttpAdapter()
-    .getInstance()
-    .set('trust proxy', ips.length ? ips : false);
+  setupProxy(app, envConfig);
+  const frontend = envConfig.get<string>('FRONTEND_DIST');
+  if (frontend) app.use(frontendMiddleware(frontend));
   app.setGlobalPrefix('api');
   app.useGlobalFilters(new HttpExceptionFilter());
   const config = new DocumentBuilder()

@@ -69,3 +69,8 @@ jobs:
       - name: Frontend services against NestJS and PostgreSQL
         working-directory: frontend
         run: npm run test:integration
+      - name: Frontend production build for single-service hosting
+        working-directory: frontend
+        run: npm run build
+      - name: Render startup rejects invalid configuration and failed migrations
+        run: node --test scripts/test-render-release.mjs

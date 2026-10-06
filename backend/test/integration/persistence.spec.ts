@@ -5,6 +5,10 @@ import { compare, hash } from 'bcrypt';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '../../src/generated/prisma/client.js';
 import { seedDemo } from '../../src/prisma/seed-demo.js';
+import {
+  provisionDemo,
+  provisionUsers,
+} from '../../src/prisma/provision-demo.js';
 
 const rollback = new Error('ROLLBACK_TEST_DATA');
 let client: PrismaClient;
@@ -49,6 +53,66 @@ const requestData = () => ({
   requesterId: userId,
   categoryId,
 });
+
+it('provisions private credentials twice without resetting users, passwords or business data', async () => {
+  const login = 'cloud.' + randomUUID();
+  const second = 'cloud.' + randomUUID();
+  const users = provisionUsers(
+    JSON.stringify([
+      {
+        username: login,
+        name: 'Cloud One',
+        password: 'private-test-password-one',
+      },
+      {
+        username: second,
+        name: 'Cloud Two',
+        password: 'private-test-password-two',
+      },
+    ]),
+  );
+  await expect(
+    client.$transaction(
+      async (tx) => {
+        await provisionDemo(tx, users);
+        const original = await tx.user.findUniqueOrThrow({
+          where: { username: login },
+        });
+        expect(await compare(users[0].password, original.passwordHash)).toBe(
+          true,
+        );
+        const changedHash = await hash('operator-changed-password', 4);
+        await tx.user.update({
+          where: { id: original.id },
+          data: { name: 'Preserved', passwordHash: changedHash },
+        });
+        await provisionDemo(tx, users);
+        expect(
+          await tx.user.findUniqueOrThrow({ where: { username: login } }),
+        ).toMatchObject({
+          id: original.id,
+          name: 'Preserved',
+          passwordHash: changedHash,
+        });
+        expect(
+          await tx.category.count({
+            where: { name: { in: [...demoCategoriesForTest] } },
+          }),
+        ).toBe(5);
+        throw rollback;
+      },
+      { timeout: 60000 },
+    ),
+  ).rejects.toBe(rollback);
+});
+
+const demoCategoriesForTest = [
+  'TI',
+  'RH',
+  'Compras',
+  'Financeiro',
+  'Infraestrutura',
+];
 
 it('seeds twice without duplicates and preserves existing identities and credentials', async () => {
   await expect(

@@ -1,0 +1,39 @@
+# Connect this repository through the Render GitHub integration, not a public URL.
+services:
+  - type: web
+    name: cubity-support-demo
+    runtime: node
+    plan: free
+    region: virginia
+    branch: main
+    autoDeployTrigger: checksPass
+    buildCommand: node backend/scripts/render-build.mjs
+    startCommand: node backend/scripts/render-start.mjs
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: 24.21.0
+      - key: SKIP_INSTALL_DEPS
+        value: "true"
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      - key: HOSTING_PLATFORM
+        value: render
+      - key: FRONTEND_DIST
+        value: ../frontend/dist
+      - key: DATABASE_URL
+        sync: false
+      - key: DATABASE_MIGRATION_URL
+        sync: false
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: SESSION_TTL_SECONDS
+        value: "28800"
+      - key: TRUSTED_PROXY_IPS
+        value: ""
+      - key: SEED_DEMO
+        value: "false"
+      - key: OBSERVE_ENABLED
+        value: "false"

@@ -59,10 +59,12 @@ export function LoginPage() {
                   </p>
                 )}
                 <LoginForm onLogin={auth.login} />
-                <p className="text-sm text-muted-foreground">
-                  Usuários de demonstração: ana.demo ou bruno.demo. Senha:
-                  demo123.
-                </p>
+                {import.meta.env.VITE_SHOW_DEMO_CREDENTIALS !== 'false' && (
+                  <p className="text-sm text-muted-foreground">
+                    Usuários de demonstração: ana.demo ou bruno.demo. Senha:
+                    demo123.
+                  </p>
+                )}
               </>
             )}
           </CardContent>
