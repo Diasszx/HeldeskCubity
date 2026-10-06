@@ -32,7 +32,7 @@ GET /api/requests?title=vpn&status=OPEN&startDate=2026-06-01&endDate=2026-06-30
 
 Dashboard não recebe filtros; query strings são recusadas com 400 para evitar resultados ambíguos. A listagem filtrada não interfere nos indicadores. Uma única agregação por status no PostgreSQL produz os três contadores, e total é sua soma. Não há consultas separadas de contagem que possam observar estados diferentes durante uma alteração concorrente. Com banco vazio, todos os quatro valores são zero.
 
-Não foram adicionadas migrations ou dependências. Os endpoints e schemas estão em /api/docs e /api/docs-json. O frontend continua com mocks até a etapa de integração; a leitura do dashboard HTTP será adicionada ao cliente nessa etapa.
+Não foram adicionadas migrations ou dependências. Os endpoints e schemas estão em /api/docs e /api/docs-json. O frontend integrado usa listagem, filtros e dashboard HTTP; mocks ficam restritos aos testes.
 
 ## Evidências
 
