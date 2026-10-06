@@ -54,3 +54,11 @@ Em **cubity-support-demo → Environment**, configure `OBSERVE_APP_KEY` e `OBSER
 Após deploy, gere tráfego autenticado de consulta e confira a versão no painel Observe. Traces são enviados em intervalos de 5 segundos; métricas de runtime em 60 segundos. Health está excluído. Testes locais não comprovam ingestão no serviço oficial.
 
 Referência: [variáveis automáticas do Render](https://render.com/docs/environment-variables).
+
+## Evidência de ingestão no painel oficial
+
+Captura fornecida pelo responsável em 05/10/2026: o NestJS Observe apresenta 2 requisições na janela de 1 hora, duração média de 4,26 ms, P95 de 5,80 ms e nenhum erro registrado nessa amostra. Isso evidencia ingestão de telemetria no painel; não comprova cobertura completa, alertas ou desempenho sob carga. A versão exibida é `0.1.0`, portanto esta captura não valida a identificação automática pelo commit.
+
+![Dashboard NestJS Observe](../docs/screenshots/observe-dashboard.png)
+
+O deploy que introduz a versão automática (`8193636`) ainda estava em build na [captura do Render](../docs/screenshots/render-cd-automatico.png). Validar a nova versão no painel após esse deploy concluir.

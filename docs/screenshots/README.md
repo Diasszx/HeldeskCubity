@@ -107,3 +107,19 @@ Diálogo com foco inicial em Cancelar. A captura foi seguida de Escape: a solici
 7. Salvar JPEGs com os nomes deste índice; revisar imagens e legendas; atualizar [validação](../validacao.md) com os resultados da execução.
 
 Não capturar DevTools com cookies, credenciais, dumps, dados pessoais reais ou telas do Observe com segredos. Não substituir evidências por imagens geradas. Estas capturas não comprovam testes de carga, TLS produtivo, alertas, auditoria de acessibilidade ou funcionamento de funcionalidades fora do escopo.
+
+## Evidências cloud — Observe e Render
+
+As imagens abaixo foram fornecidas pelo responsável; são distintas da galeria local anterior.
+
+### Dashboard NestJS Observe
+
+Captura fornecida pelo responsável em 05/10/2026: o NestJS Observe apresenta 2 requisições na janela de 1 hora, duração média de 4,26 ms, P95 de 5,80 ms e nenhum erro registrado nessa amostra. Isso evidencia ingestão de telemetria no painel; não comprova cobertura completa, alertas ou desempenho sob carga. A versão exibida é `0.1.0`, portanto esta captura não valida a identificação automática pelo commit.
+
+![Telemetria no NestJS Observe](observe-dashboard.png)
+
+### CD no Render
+
+Captura fornecida pelo responsável em 05/10/2026: o commit `44356b3` aparece Live e possui um deploy concluído com origem **Auto-Deploy**. O merge do PR #24, commit `8193636`, aparece em **Building**, também por Auto-Deploy. A imagem comprova acionamento automático e uma publicação anterior concluída; não comprova conclusão do deploy `8193636` nem bloqueio por falha de CI. O Service ID foi ocultado na imagem fornecida.
+
+![Deploy automático no Render](render-cd-automatico.png)

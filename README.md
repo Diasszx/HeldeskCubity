@@ -165,6 +165,18 @@ As decisões estão no [complemento do memorial técnico](docs/MEMORIAL_CD.md); 
 
 ## Limites e melhorias futuras
 
-Listagem sem paginação, bundle frontend acima de 500 kB e ausência de teste de carga. Não há recuperação de senha, provisionamento de usuários produtivos ou trilha de auditoria. Observe permanece desativado por padrão; dashboard externo/alertas dependem de credenciais e ativação. TLS real, retenção e restauração de backups exigem configuração operacional. Redis é possibilidade futura condicionada a métricas, não dependência atual.
+Listagem sem paginação, bundle frontend acima de 500 kB e ausência de teste de carga. Não há recuperação de senha, provisionamento de usuários produtivos ou trilha de auditoria. Observe permanece desativado por padrão no código; há evidência de ingestão no painel externo após ativação operacional. Alertas ainda não foram demonstrados. TLS real, retenção e restauração de backups exigem configuração operacional. Redis é possibilidade futura condicionada a métricas, não dependência atual.
 
 Organização da apresentação inspirada no [Helpdesk Management System](https://github.com/roposropos/helpdesk-management-system), com conteúdo e capturas próprios deste portal.
+
+## Evidências de observabilidade e CD
+
+Captura fornecida pelo responsável em 05/10/2026: o NestJS Observe apresenta 2 requisições na janela de 1 hora, duração média de 4,26 ms, P95 de 5,80 ms e nenhum erro registrado nessa amostra. Isso evidencia ingestão de telemetria no painel; não comprova cobertura completa, alertas ou desempenho sob carga. A versão exibida é `0.1.0`, portanto esta captura não valida a identificação automática pelo commit.
+
+![Dashboard NestJS Observe](docs/screenshots/observe-dashboard.png)
+
+Captura fornecida pelo responsável em 05/10/2026: o commit `44356b3` aparece Live e possui um deploy concluído com origem **Auto-Deploy**. O merge do PR #24, commit `8193636`, aparece em **Building**, também por Auto-Deploy. A imagem comprova acionamento automático e uma publicação anterior concluída; não comprova conclusão do deploy `8193636` nem bloqueio por falha de CI. O Service ID foi ocultado na imagem fornecida.
+
+![Entrega contínua no Render](docs/screenshots/render-cd-automatico.png)
+
+Consulte a [galeria](docs/screenshots/README.md), as [evidências de CD](docs/screenshots/CD.md) e a [configuração do Observe](backend/OBSERVABILITY.md).
