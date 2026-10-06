@@ -48,7 +48,10 @@ function sidOf(cookie: string) {
     .split('.')[0];
 }
 
-async function createApp(overrides: Record<string, unknown> = {}) {
+async function createApp(
+  overrides: Record<string, unknown> = {},
+  emulateRender = false,
+) {
   const { AppModule } = await import('../../src/app.module.js');
   @Module({ imports: [AppModule], controllers: [ProtectedProbe] })
   class Root {}
@@ -61,7 +64,14 @@ async function createApp(overrides: Record<string, unknown> = {}) {
   });
   const module = await Test.createTestingModule({ imports: [Root] })
     .overrideProvider(ConfigService)
-    .useValue(new ConfigService(env))
+    // The local PostgreSQL fixture is not TLS; environment validation for cloud
+    // URLs is tested separately. Emulate only the ingress contract here.
+    .useValue(
+      new ConfigService({
+        ...env,
+        ...(emulateRender ? { HOSTING_PLATFORM: 'render' } : {}),
+      }),
+    )
     .compile();
   const instance = module.createNestApplication({ logger: false });
   setupApplication(instance);
@@ -405,5 +415,65 @@ it('requires HTTPS and only trusts explicit proxy addresses in production', asyn
     expect(String(response.headers['set-cookie'])).toContain('HttpOnly');
   } finally {
     await trusted.close();
+  }
+});
+
+it('keeps Secure sessions across a Render process restart and rejects forged origins', async () => {
+  const settings = {
+    NODE_ENV: 'production',
+    APP_ORIGIN: 'https://portal.test',
+  };
+  let hosted = await createApp(settings, true);
+  try {
+    const csrf = await request(hosted.getHttpServer())
+      .get('/api/auth/csrf')
+      .set('Origin', 'https://portal.test')
+      .set('X-Forwarded-Proto', 'http, https')
+      .set('X-Forwarded-Host', 'attacker.test')
+      .expect(200);
+    const anonymousCookie = cookieOf(csrf)!;
+    expect(String(csrf.headers['set-cookie'])).toContain('Secure');
+    const authenticated = await request(hosted.getHttpServer())
+      .post('/api/auth/login')
+      .set('Origin', 'https://portal.test')
+      .set('Cookie', anonymousCookie)
+      .set('X-CSRF-Token', csrf.body.csrfToken)
+      .send({ username, password })
+      .expect(200);
+    const activeCookie = cookieOf(authenticated)!;
+    await hosted.close();
+    hosted = await createApp(settings, true);
+    await request(hosted.getHttpServer())
+      .get('/api/auth/me')
+      .set('Cookie', activeCookie)
+      .set('X-Forwarded-Proto', 'http')
+      .expect(200);
+    await request(hosted.getHttpServer())
+      .get('/api/auth/csrf')
+      .set('Cookie', activeCookie)
+      .set('Origin', 'https://attacker.test')
+      .set('X-Forwarded-Host', 'attacker.test')
+      .expect(403);
+    await request(hosted.getHttpServer())
+      .post('/api/auth/logout')
+      .set('Cookie', activeCookie)
+      .expect(403);
+    const nonce = await request(hosted.getHttpServer())
+      .get('/api/auth/csrf')
+      .set('Cookie', activeCookie)
+      .set('Origin', 'https://portal.test')
+      .expect(200);
+    await request(hosted.getHttpServer())
+      .post('/api/auth/logout')
+      .set('Cookie', activeCookie)
+      .set('Origin', 'https://portal.test')
+      .set('X-CSRF-Token', nonce.body.csrfToken)
+      .expect(204);
+    await request(hosted.getHttpServer())
+      .get('/api/auth/me')
+      .set('Cookie', activeCookie)
+      .expect(401);
+  } finally {
+    await hosted.close();
   }
 });
