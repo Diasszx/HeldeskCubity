@@ -1,6 +1,6 @@
 # Cadastro de solicitações e catálogos
 
-Os endpoints abaixo exigem cookie de sessão válido, conforme [AUTHENTICATION.md](AUTHENTICATION.md). O frontend permanece com mocks até a etapa de integração. Não há cadastro público nem edição de usuários ou categorias.
+Os endpoints abaixo exigem cookie de sessão válido, conforme [AUTHENTICATION.md](AUTHENTICATION.md). O frontend integrado consome estes endpoints; mocks ficam restritos aos testes. Não há cadastro público nem edição de usuários ou categorias.
 
 | Método e rota       | Resposta                                                      |
 | ------------------- | ------------------------------------------------------------- |
