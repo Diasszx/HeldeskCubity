@@ -4,7 +4,7 @@ A API usa Prisma 7 em ESM com PostgreSQL 17. A migration versionada cria tabelas
 
 ## Modelo adotado
 
-Estas são escolhas de implementação desta etapa; não representam aprovação prévia de um schema. UUIDs mantêm IDs como strings no contrato do frontend. Não existem endpoints de negócio ou autenticação real nesta etapa.
+O modelo implementado sustenta os endpoints de negócio e a autenticação reais. UUIDs mantêm IDs como strings no contrato do frontend. O [dicionário completo](../docs/dicionario-de-dados.md) registra tipos, defaults, relações e índices.
 
 | Tabela/campo                     | Tipo e regra                                                                                              |
 | -------------------------------- | --------------------------------------------------------------------------------------------------------- |
@@ -20,9 +20,9 @@ Estas são escolhas de implementação desta etapa; não representam aprovação
 | Request.status                   | enum OPEN, IN_PROGRESS, COMPLETED; padrão OPEN                                                            |
 | session.sid / sess / expire      | varchar PK, json obrigatório e timestamp(6) obrigatório, compatíveis com connect-pg-simple                |
 
-Índices: Request(createdAt,id), (categoryId,createdAt), (status,createdAt), requesterId e session(expire). A interpretação dos filtros por dia será definida junto aos endpoints; timestamptz preserva instantes, sem fixar o fuso dos filtros.
+Índices: Request(createdAt,id), (categoryId,createdAt), (status,createdAt), requesterId e session(expire). Os filtros por dia são inclusivos em UTC, conforme [QUERIES.md](QUERIES.md); timestamptz preserva os instantes.
 
-next_request_code() consome uma sequência BIGINT atômica: SOL-0001, SOL-9999, SOL-10000. Não calcula count()+1, não trunca valores e não reutiliza números. Exclusões, rollbacks e erros podem deixar lacunas. A migration mantém a função e a sequência, que não são representadas como modelos Prisma. Checks e objetos SQL customizados devem ser preservados nas futuras migrations. Campos automáticos e regras de proprietário/transição serão protegidos também pelos services quando os endpoints forem implementados.
+next_request_code() consome uma sequência BIGINT atômica: SOL-0001, SOL-9999, SOL-10000. Não calcula count()+1, não trunca valores e não reutiliza números. Exclusões, rollbacks e erros podem deixar lacunas. A migration mantém a função e a sequência, que não são representadas como modelos Prisma. Checks e objetos SQL customizados devem ser preservados nas futuras migrations. Campos automáticos e regras de proprietário/transição são protegidos pelos services, inclusive nas escritas condicionadas.
 
 ## Desenvolvimento com Docker
 
@@ -54,9 +54,9 @@ Remove-Item Env:SEED_DEMO
 npm run dev
 ```
 
-DATABASE_URL no host usa postgresql://cubity:SENHA@127.0.0.1:5432/cubity_support; no futuro serviço API do mesmo Compose, usa db:5432. Codifique caracteres especiais da senha na URL. Nunca publique .env. npm run db:migrate cria migrations durante desenvolvimento; npm run db:deploy aplica somente as migrations versionadas e pode ser repetido. Não executa seed automaticamente.
+DATABASE_URL no host usa postgresql://cubity:SENHA@127.0.0.1:5432/cubity_support; no serviço API do Compose completo, usa db:5432. Codifique caracteres especiais da senha na URL. Nunca publique .env. npm run db:migrate cria migrations durante desenvolvimento; npm run db:deploy aplica somente as migrations versionadas e pode ser repetido. Não executa seed automaticamente.
 
-O seed cria ana.demo (Ana Silva), bruno.demo (Bruno Costa), ambos com senha pública demo123, e categorias TI, RH, Compras, Financeiro e Infraestrutura. IDs são UUIDs e não os identificadores dos mocks. bcrypt 6 usa custo 12 neste seed; a política de autenticação será documentada na etapa de sessão. SEED_DEMO=true é obrigatório e NODE_ENV=production é recusado. Registros existentes não têm senha, nome ou ID redefinidos. O seed não cria solicitações, não é parte do startup e não deve ser usado para recuperar credenciais de contas existentes.
+O seed cria ana.demo (Ana Silva), bruno.demo (Bruno Costa), ambos com senha pública demo123, e categorias TI, RH, Compras, Financeiro e Infraestrutura. IDs são UUIDs e não os identificadores dos mocks. bcrypt 6 usa custo 12 neste seed; a política de autenticação está documentada em [AUTHENTICATION.md](AUTHENTICATION.md). SEED_DEMO=true é obrigatório e NODE_ENV=production é recusado. Registros existentes não têm senha, nome ou ID redefinidos. O seed não cria solicitações e não deve recuperar credenciais de contas existentes. Fora do Compose, é explícito; no Compose completo, o job de preparo o executa somente com SEED_DEMO=true.
 
 ```powershell
 docker compose stop db

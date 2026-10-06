@@ -43,7 +43,7 @@ O workflow `frontend-ci.yml` também executa o guard em pull requests para main.
 
 O guard é uma proteção contra regressões comuns, não uma prova completa de acessibilidade ou de origem shadcn/ui. Revisar o diff e validar teclado, foco e responsividade no navegador continuam obrigatórios. Links de marca e navegação conservam semântica própria; não são botões.
 
-As telas continuam provisórias, sem autenticação, dados ou formulários reais. Este trabalho não implementa regras do backend. O README excluído no working tree foi preservado como exclusão do usuário; este documento concentra a justificativa da mudança.
+O registro abaixo descreve a validação histórica da incorporação do design system. Atualmente as telas usam formulários, autenticação e dados da API real; mocks ficam nos testes. A validação integrada atual está em [docs/validacao.md](../docs/validacao.md).
 
 ## Validação realizada
 

@@ -1,7 +1,9 @@
 # MEMORIAL TÉCNICO DE DESENVOLVIMENTO
 
-**Projeto:** Cubity Support — Portal de Solicitações Internas da bit Soluções  
-**Data desta revisão:** 05/10/2026  
+**Projeto:** Cubity Support — Portal de Solicitações Internas da bit Soluções
+
+**Data desta revisão:** 05/10/2026
+
 **Escopo:** documentação da implementação disponível no repositório, conforme os entregáveis solicitados. Este memorial consolida a referência de planejamento e as decisões posteriormente adotadas; resultados demonstrados estão no [relatório de validação](validacao.md).
 
 ## 1. Escopo do projeto
