@@ -10,6 +10,7 @@ API NestJS 12 em ESM com TypeScript, Express, Zod e Prisma 7. PostgreSQL executa
 - [Edição, exclusão, atendimento e concorrência](ACTIONS.md)
 - [Testes reproduzíveis e CI com PostgreSQL separado](TESTING.md)
 - [Observabilidade NestJS Observe: cobertura, privacidade e ativação](OBSERVABILITY.md)
+- [Render + Neon: publicação gratuita, migrations e provisionamento privado](../docs/CD.md)
 
 Na raiz: preparar .docker/database.env a partir do exemplo e executar docker compose up -d db. Dentro de backend: npm ci, configurar .env, npm run db:deploy e npm run dev. Seed é explícito, conforme DATABASE.md. Não versionar arquivos de ambiente locais.
 
